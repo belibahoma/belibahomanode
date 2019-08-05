@@ -1,0 +1,485 @@
+const { Trainee } = require("../model/Trainee");
+const _ = require("lodash");
+const auth = require("../middleware/auth");
+const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
+const express = require("express");
+const router = express.Router();
+
+router.get("/me", auth, async (req, res) => {
+  if (req.user.type === "trainee") {
+    const trainee = await Trainee.findById(req.user._id).select("-password");
+    res.send(trainee);
+  } else {
+    res.status(401).send("unauthorized");
+  }
+});
+
+router.get("/", auth, async (req, res) => {
+  if (req.user.type === "admin") {
+    const trainees = await Trainee.find().sort("fname");
+    res.send(
+      trainees.map(trainee => {
+        return _.pick(trainee, [
+          "_id",
+          "userType",
+          "id",
+          "fname",
+          "lname",
+          "email",
+          "phoneA",
+          "phoneB",
+          "birthDate",
+          "maritalStatus",
+          "activityArea",
+          "institute",
+          "mainStudy",
+          "secondaryStudy",
+          "academicPlan",
+          "studyYear",
+          "bankAccount",
+          "realAddress",
+          "currentAddress",
+          "activeYears",
+          "religiousStatus",
+          "religiousText",
+          "unavailableTimes",
+          "notes",
+          "stuffNotes",
+          "isNeedAdditionalRelation",
+          "activeStatus",
+          "isFinnishPreparatory",
+          "isGraduated",
+          "isFoundJob",
+          "isJobInStudyFelid",
+          // until here is the common part
+          "isInMagid",
+          "isLiveInSelectedCities",
+          "isRegisteredToKivun",
+          "needsHelpIn",
+          "workStatus",
+          "workTitle",
+          "isLearnedInYeshiva",
+          "yeshivaTimes",
+          "isHaveAnotherProfessionalTraining",
+          "previousProfession",
+          "isHaveAnotherDegree",
+          "previousDegree",
+          "WantDetailsAbout",
+          "isServed",
+          "mathLevel",
+          "englishLevel",
+          "physicsLevel",
+          "additionalTopics",
+          "isActive",
+          "leavingReason",
+          "isDropped"
+        ]);
+      })
+    );
+  } else {
+    res.status(401).send("unauthorized");
+  }
+});
+
+router.post("/", async (req, res) => {
+  //TODO
+  //   const { error } = validate(req.body);
+  //   if (error) return res.status(400).send(error.details[0].message);
+  let trainee = await Trainee.findOne({ id: req.body.id });
+  if (trainee) {
+    res.statusCode = 400;
+    res.send("the user already exists");
+  } else {
+    trainee = new Trainee({
+      userType: "trainee",
+      id: req.body.id,
+      fname: req.body.fname,
+      lname: req.body.lname,
+      email: req.body.email,
+      password: req.body.password,
+      phoneA: req.body.phoneA,
+      phoneB: req.body.phoneB,
+      birthDate: req.body.birthDate,
+      maritalStatus: req.body.maritalStatus,
+      activityArea: req.body.activityArea,
+      institute: req.body.institute,
+      mainStudy: req.body.mainStudy,
+      secondaryStudy: req.body.secondaryStudy,
+      academicPlan: req.body.academicPlan,
+      studyYear: req.body.studyYear,
+      bankAccount: req.body.bankAccount,
+      realAddress: req.body.realAddress,
+      currentAddress: req.body.currentAddress,
+      activeYears: req.body.activeYears,
+      religiousStatus: req.body.religiousStatus,
+      religiousText: req.body.religiousText,
+      unavailableTimes: req.body.unavailableTimes,
+      notes: req.body.notes,
+      stuffNotes: req.body.stuffNotes,
+      isNeedAdditionalRelation: req.body.isNeedAdditionalRelation,
+      activeStatus: req.body.activeStatus,
+      isFinnishPreparatory: req.body.isFinnishPreparatory,
+      isGraduated: req.body.isGraduated,
+      isFoundJob: req.body.isFoundJob,
+      isJobInStudyFelid: req.body.isJobInStudyFelid,
+      // until here is the common part
+      isInMagid: req.body.isInMagid,
+      isLiveInSelectedCities: req.body.isLiveInSelectedCities,
+      isRegisteredToKivun: req.body.isRegisteredToKivun,
+      needsHelpIn: req.body.needsHelpIn,
+      workStatus: req.body.workStatus,
+      workTitle: req.body.workTitle,
+      isLearnedInYeshiva: req.body.isLearnedInYeshiva,
+      yeshivaTimes: req.body.yeshivaTimes,
+      isHaveAnotherProfessionalTraining:
+        req.body.isHaveAnotherProfessionalTraining,
+      previousProfession: req.body.previousProfession,
+      isHaveAnotherDegree: req.body.isHaveAnotherDegree,
+      previousDegree: req.body.previousDegree,
+      WantDetailsAbout: req.body.WantDetailsAbout,
+      isServed: req.body.isServed,
+      mathLevel: req.body.mathLevel,
+      englishLevel: req.body.englishLevel,
+      physicsLevel: req.body.physicsLevel,
+      additionalTopics: req.body.additionalTopics,
+      isActive: req.body.isActive,
+      leavingReason: req.body.leavingReason,
+      isDropped: req.body.isDropped
+    });
+    try {
+      const salt = await bcrypt.genSalt(10);
+      trainee.password = await bcrypt.hash(trainee.password, salt);
+      trainee = await trainee.save();
+
+      const token = trainee.generateAuthToken();
+
+      res.header("x-auth-token", token).send(
+        _.pick(trainee, [
+          "_id",
+          "userType",
+          "id",
+          "fname",
+          "lname",
+          "email",
+          "phoneA",
+          "phoneB",
+          "birthDate",
+          "maritalStatus",
+          "activityArea",
+          "institute",
+          "mainStudy",
+          "secondaryStudy",
+          "academicPlan",
+          "studyYear",
+          "bankAccount",
+          "realAddress",
+          "currentAddress",
+          "activeYears",
+          "religiousStatus",
+          "religiousText",
+          "unavailableTimes",
+          "notes",
+          "stuffNotes",
+          "isNeedAdditionalRelation",
+          "activeStatus",
+          "isFinnishPreparatory",
+          "isGraduated",
+          "isFoundJob",
+          "isJobInStudyFelid",
+          // until here is the common part
+          "isInMagid",
+          "isLiveInSelectedCities",
+          "isRegisteredToKivun",
+          "needsHelpIn",
+          "workStatus",
+          "workTitle",
+          "isLearnedInYeshiva",
+          "yeshivaTimes",
+          "isHaveAnotherProfessionalTraining",
+          "previousProfession",
+          "isHaveAnotherDegree",
+          "previousDegree",
+          "WantDetailsAbout",
+          "isServed",
+          "mathLevel",
+          "englishLevel",
+          "physicsLevel",
+          "additionalTopics",
+          "isActive",
+          "leavingReason",
+          "isDropped"
+        ])
+      );
+    } catch (err) {
+      res.statusCode = 400;
+      res.send(err.message);
+    }
+  }
+});
+
+router.put("/:id", auth, async (req, res) => {
+  //   const { error } = validate(req.body);
+  //   if (error) return res.status(400).send(error.details[0].message);
+  //TODO
+  if (req.user.type === "admin" || req.user._id == req.params.id) {
+    let trainee = await Trainee.findById(req.params.id);
+    if (!trainee) {
+      return res
+        .status(404)
+        .send("The trainee with the given ID was not found.");
+    } else {
+      trainee.id = req.body.id;
+      trainee.fname = req.body.fname;
+      trainee.lname = req.body.lname;
+      trainee.email = req.body.email;
+      //TODO change password case
+      trainee.password = req.body.password;
+      trainee.phoneA = req.body.phoneA;
+      trainee.phoneB = req.body.phoneB;
+      trainee.birthDate = req.body.birthDate;
+      trainee.maritalStatus = req.body.maritalStatus;
+      trainee.activityArea = req.body.activityArea;
+      trainee.institute = req.body.institute;
+      trainee.mainStudy = req.body.mainStudy;
+      trainee.secondaryStudy = req.body.secondaryStudy;
+      trainee.academicPlan = req.body.academicPlan;
+      trainee.studyYear = req.body.studyYear;
+      trainee.bankAccount = req.body.bankAccount;
+      trainee.realAddress = req.body.realAddress;
+      trainee.currentAddress = req.body.currentAddress;
+      trainee.activeYears = req.body.activeYears;
+      trainee.religiousStatus = req.body.religiousStatus;
+      trainee.religiousText = req.body.religiousText;
+      trainee.unavailableTimes = req.body.unavailableTimes;
+      trainee.notes = req.body.notes;
+      trainee.stuffNotes = req.body.stuffNotes;
+      trainee.isNeedAdditionalRelation = req.body.isNeedAdditionalRelation;
+      trainee.activeStatus = req.body.activeStatus;
+      trainee.isFinnishPreparatory = req.body.isFinnishPreparatory;
+      trainee.isGraduated = req.body.isGraduated;
+      trainee.isFoundJob = req.body.isFoundJob;
+      trainee.isJobInStudyFelid = req.body.isJobInStudyFelid;
+      // until here is the common part
+      trainee.isImpact = req.body.isImpact;
+      trainee.isShachak = req.body.isShachak;
+      trainee.isForAcademicPoints = req.body.isForAcademicPoints;
+      trainee.isCityScholarship = req.body.isCityScholarship;
+      trainee.mathLevel = req.body.mathLevel;
+      trainee.englishLevel = req.body.englishLevel;
+      trainee.physicsLevel = req.body.physicsLevel;
+      trainee.additionalTopics = req.body.additionalTopics;
+      trainee.isActive = req.body.isActive;
+      try {
+        const salt = await bcrypt.genSalt(10);
+        trainee.password = await bcrypt.hash(trainee.password, salt);
+        trainee = trainee.save();
+        res.send(
+          _.pick(trainee, [
+            "_id",
+            "userType",
+            "id",
+            "fname",
+            "lname",
+            "email",
+            "phoneA",
+            "phoneB",
+            "birthDate",
+            "maritalStatus",
+            "activityArea",
+            "institute",
+            "mainStudy",
+            "secondaryStudy",
+            "academicPlan",
+            "studyYear",
+            "bankAccount",
+            "realAddress",
+            "currentAddress",
+            "activeYears",
+            "religiousStatus",
+            "religiousText",
+            "unavailableTimes",
+            "notes",
+            "stuffNotes",
+            "isNeedAdditionalRelation",
+            "activeStatus",
+            "isFinnishPreparatory",
+            "isGraduated",
+            "isFoundJob",
+            "isJobInStudyFelid",
+            // until here is the common part
+            "isInMagid",
+            "isLiveInSelectedCities",
+            "isRegisteredToKivun",
+            "needsHelpIn",
+            "workStatus",
+            "workTitle",
+            "isLearnedInYeshiva",
+            "yeshivaTimes",
+            "isHaveAnotherProfessionalTraining",
+            "previousProfession",
+            "isHaveAnotherDegree",
+            "previousDegree",
+            "WantDetailsAbout",
+            "isServed",
+            "mathLevel",
+            "englishLevel",
+            "physicsLevel",
+            "additionalTopics",
+            "isActive",
+            "leavingReason",
+            "isDropped"
+          ])
+        );
+      } catch (error) {
+        res.status(400).send(error.message);
+      }
+    }
+  } else {
+    res.status(401).send("unauthorized");
+  }
+});
+
+router.delete("/:id", auth, async (req, res) => {
+  if (req.user.type === "admin") {
+    const trainee = await Trainee.findByIdAndRemove(req.params.id);
+
+    if (!trainee)
+      return res
+        .status(404)
+        .send("The trainee with the given ID was not found.");
+
+    res.send(
+      _.pick(trainee, [
+        "_id",
+        "userType",
+        "id",
+        "fname",
+        "lname",
+        "email",
+        "phoneA",
+        "phoneB",
+        "birthDate",
+        "maritalStatus",
+        "activityArea",
+        "institute",
+        "mainStudy",
+        "secondaryStudy",
+        "academicPlan",
+        "studyYear",
+        "bankAccount",
+        "realAddress",
+        "currentAddress",
+        "activeYears",
+        "religiousStatus",
+        "religiousText",
+        "unavailableTimes",
+        "notes",
+        "stuffNotes",
+        "isNeedAdditionalRelation",
+        "activeStatus",
+        "isFinnishPreparatory",
+        "isGraduated",
+        "isFoundJob",
+        "isJobInStudyFelid",
+        // until here is the common part
+        "isInMagid",
+        "isLiveInSelectedCities",
+        "isRegisteredToKivun",
+        "needsHelpIn",
+        "workStatus",
+        "workTitle",
+        "isLearnedInYeshiva",
+        "yeshivaTimes",
+        "isHaveAnotherProfessionalTraining",
+        "previousProfession",
+        "isHaveAnotherDegree",
+        "previousDegree",
+        "WantDetailsAbout",
+        "isServed",
+        "mathLevel",
+        "englishLevel",
+        "physicsLevel",
+        "additionalTopics",
+        "isActive",
+        "leavingReason",
+        "isDropped"
+      ])
+    );
+  } else {
+    res.status(401).send("unauthorized");
+  }
+});
+
+router.get("/:id", auth, async (req, res) => {
+  if (req.user.type === "admin" || req.user._id == req.params.id) {
+    const trainee = await Trainee.findById(req.params.id);
+
+    if (!trainee)
+      return res
+        .status(404)
+        .send("The trainee with the given ID was not found.");
+
+    res.send(
+      _.pick(trainee, [
+        "_id",
+        "userType",
+        "id",
+        "fname",
+        "lname",
+        "email",
+        "phoneA",
+        "phoneB",
+        "birthDate",
+        "maritalStatus",
+        "activityArea",
+        "institute",
+        "mainStudy",
+        "secondaryStudy",
+        "academicPlan",
+        "studyYear",
+        "bankAccount",
+        "realAddress",
+        "currentAddress",
+        "activeYears",
+        "religiousStatus",
+        "religiousText",
+        "unavailableTimes",
+        "notes",
+        "stuffNotes",
+        "isNeedAdditionalRelation",
+        "activeStatus",
+        "isFinnishPreparatory",
+        "isGraduated",
+        "isFoundJob",
+        "isJobInStudyFelid",
+        // until here is the common part
+        "isInMagid",
+        "isLiveInSelectedCities",
+        "isRegisteredToKivun",
+        "needsHelpIn",
+        "workStatus",
+        "workTitle",
+        "isLearnedInYeshiva",
+        "yeshivaTimes",
+        "isHaveAnotherProfessionalTraining",
+        "previousProfession",
+        "isHaveAnotherDegree",
+        "previousDegree",
+        "WantDetailsAbout",
+        "isServed",
+        "mathLevel",
+        "englishLevel",
+        "physicsLevel",
+        "additionalTopics",
+        "isActive",
+        "leavingReason",
+        "isDropped"
+      ])
+    );
+  } else {
+    res.status(401).send("unauthorized");
+  }
+});
+
+module.exports = router;
