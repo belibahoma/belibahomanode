@@ -28,7 +28,7 @@ router.post("/", async (req, res) => {
       res.send("Invalid username or password");
     } else {
       const token = user.generateAuthToken();
-      res.send(token);
+      res.send({ token: token, user: _.omit(user.toObject(), ["password"]) });
     }
   }
 });

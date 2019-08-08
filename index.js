@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const config = require("config");
 const auth = require("./routes/auth");
+const accessControls = require("./middleware/accessControls");
 const Tutors = require("./routes/Tutors");
 const Institutes = require("./routes/Institutes");
 const Areas = require("./routes/Areas");
@@ -24,6 +25,7 @@ mongoose
   .catch(err => console.error("Could not connect to MongoDB..."));
 
 app.use(express.json());
+app.use(accessControls);
 app.use("/api/tutors", Tutors);
 app.use("/api/coordinators", Coordinators);
 app.use("/api/admins", Admins);
@@ -35,5 +37,5 @@ app.use("/api/areas", Areas);
 app.use("/api/auth", auth);
 // app.use('/api/customers', customers);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 app.listen(port, () => console.log(`Listening on port ${port}...`));

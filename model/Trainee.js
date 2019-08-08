@@ -59,7 +59,12 @@ const traineeSchema = new mongoose.Schema({
       }
     }
   },
-
+  gender: {
+    type: String,
+    required: true,
+    enum: ["זכר", "נקבה"],
+    default: "זכר"
+  },
   maritalStatus: {
     type: String,
     required: true,

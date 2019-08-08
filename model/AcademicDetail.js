@@ -16,6 +16,6 @@ const academicDetailsSchema = new mongoose.Schema({
   }
 });
 
-const Academic = mongoose.model("Academic", academicDetailsSchema);
+const AcademicDetail = mongoose.model("AcademicDetail", academicDetailsSchema);
 
-module.exports.Academic = Academic;
+module.exports.AcademicDetail = AcademicDetail;

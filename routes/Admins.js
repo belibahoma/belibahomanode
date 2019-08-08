@@ -9,15 +9,16 @@ const router = express.Router();
 router.get("/me", auth, async (req, res) => {
   if (req.user.type === "admin") {
     const admin = await Admin.findById(req.user._id).select("-password");
-    res.send(admin);
-  }
-  {
+    return res.send(admin);
+  } else {
     res.status(401).send("Unauthorized");
   }
 });
 
 router.get("/", auth, async (req, res) => {
   const user = req.user;
+  console.log(user);
+
   if (user.type == "admin") {
     const admins = await Admin.find()
       .sort("fname")

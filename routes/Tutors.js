@@ -45,6 +45,7 @@ router.post("/", async (req, res) => {
       phoneA: req.body.phoneA,
       phoneB: req.body.phoneB,
       birthDate: req.body.birthDate,
+      gender: req.body.gender,
       maritalStatus: req.body.maritalStatus,
       activityArea: req.body.activityArea,
       institute: req.body.institute,
@@ -95,6 +96,7 @@ router.post("/", async (req, res) => {
           "email",
           "phoneA",
           "phoneB",
+          "gender",
           "birthDate",
           "maritalStatus",
           "activityArea",
@@ -155,6 +157,7 @@ router.put("/:id", auth, async (req, res) => {
       tutor.phoneA = req.body.phoneA;
       tutor.phoneB = req.body.phoneB;
       tutor.birthDate = req.body.birthDate;
+      tutor.gender = req.body.gender;
       tutor.maritalStatus = req.body.maritalStatus;
       tutor.activityArea = req.body.activityArea;
       tutor.institute = req.body.institute;
@@ -202,6 +205,7 @@ router.put("/:id", auth, async (req, res) => {
             "phoneA",
             "phoneB",
             "birthDate",
+            "gender",
             "maritalStatus",
             "activityArea",
             "institute",
@@ -263,6 +267,7 @@ router.delete("/:id", async (req, res) => {
         "phoneA",
         "phoneB",
         "birthDate",
+        "gender",
         "maritalStatus",
         "activityArea",
         "institute",
@@ -321,6 +326,7 @@ router.get("/:id", async (req, res) => {
         "phoneB",
         "birthDate",
         "maritalStatus",
+        "gender",
         "activityArea",
         "institute",
         "mainStudy",
