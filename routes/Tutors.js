@@ -8,7 +8,12 @@ const router = express.Router();
 
 router.get("/me", auth, async (req, res) => {
   if (req.user.type === "tutor") {
-    const tutor = await Tutor.findById(req.user._id).select("-password");
+    const tutor = await Tutor.findById(req.user._id)
+      .select("-password")
+      .populate("institute")
+      .populate("activityArea")
+      .populate("mainStudy")
+      .populate("secondaryStudy");
     res.send(tutor);
   } else {
     res.status(401).send("unauthorized");
@@ -19,7 +24,11 @@ router.get("/", auth, async (req, res) => {
   if (req.user.type === "admin") {
     const tutors = await Tutor.find()
       .sort("fname")
-      .select("-password");
+      .select("-password")
+      .populate("institute")
+      .populate("activityArea")
+      .populate("mainStudy")
+      .populate("secondaryStudy");
     res.send(tutors);
   } else {
     res.status(401).send("unauthorized");
@@ -255,7 +264,11 @@ router.put("/:id", auth, async (req, res) => {
 
 router.delete("/:id", auth, async (req, res) => {
   if (req.user.type === "admin") {
-    const tutor = await Tutor.findByIdAndRemove(req.params.id);
+    const tutor = await Tutor.findByIdAndRemove(req.params.id)
+      .populate("institute")
+      .populate("activityArea")
+      .populate("mainStudy")
+      .populate("secondaryStudy");
 
     if (!tutor)
       return res.status(404).send("The tutor with the given ID was not found.");
@@ -313,7 +326,11 @@ router.delete("/:id", auth, async (req, res) => {
 
 router.get("/:id", auth, async (req, res) => {
   if (req.user.type === "admin" || req.user._id == req.params.id) {
-    const tutor = await Tutor.findById(req.params.id);
+    const tutor = await Tutor.findById(req.params.id)
+      .populate("institute")
+      .populate("activityArea")
+      .populate("mainStudy")
+      .populate("secondaryStudy");
 
     if (!tutor)
       return res.status(404).send("The tutor with the given ID was not found.");
