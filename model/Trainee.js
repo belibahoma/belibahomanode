@@ -143,6 +143,7 @@ const traineeSchema = new mongoose.Schema({
   isGraduated: { type: Boolean, default: false },
   isFoundJob: { type: Boolean, default: false },
   isJobInStudyFelid: { type: Boolean, default: false },
+  isApproved: { type: Boolean, default: false },
   // until here is the common part
   isInMagid: { type: Boolean, default: false },
   isLiveInSelectedCities: { type: Boolean, default: false },

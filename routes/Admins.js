@@ -1,4 +1,6 @@
 const { Admin } = require("../model/Admin");
+const { Trainee } = require("../model/Trainee");
+const { Tutor } = require("../model/Tutor");
 const bcrypt = require("bcrypt");
 const auth = require("../middleware/auth");
 const _ = require("lodash");
@@ -76,6 +78,36 @@ router.post("/", async (req, res) => {
         res.statusCode = 400;
         res.send(err.message);
       }
+    }
+  } else {
+    res.status(401).send("Unauthorized");
+  }
+});
+
+router.get("/approve/trainee/:id", auth, async (req, res) => {
+  if (req.user.type === "admin") {
+    try {
+      const user = await Trainee.findById(req.user._id);
+      user.isApproved = true;
+      user.save();
+      return res.send(`${user.fname} ${user.lname} is approved successfully`);
+    } catch (error) {
+      return res.status(400).send(error.message);
+    }
+  } else {
+    res.status(401).send("Unauthorized");
+  }
+});
+
+router.get("/approve/tutor/:id", auth, async (req, res) => {
+  if (req.user.type === "admin") {
+    try {
+      const user = await Tutor.findById(req.user._id);
+      user.isApproved = true;
+      user.save();
+      return res.send(`${user.fname} ${user.lname} is approved successfully`);
+    } catch (error) {
+      return res.status(400).send(error.message);
     }
   } else {
     res.status(401).send("Unauthorized");

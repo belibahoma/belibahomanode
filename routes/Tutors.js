@@ -43,14 +43,12 @@ router.post("/", async (req, res) => {
       email: req.body.email,
       password: req.body.password,
       phoneA: req.body.phoneA,
-      phoneB: req.body.phoneB,
       birthDate: req.body.birthDate,
       gender: req.body.gender,
       maritalStatus: req.body.maritalStatus,
       activityArea: req.body.activityArea,
       institute: req.body.institute,
       mainStudy: req.body.mainStudy,
-      secondaryStudy: req.body.secondaryStudy,
       academicPlan: req.body.academicPlan,
       studyYear: req.body.studyYear,
       bankAccount: req.body.bankAccount,
@@ -79,6 +77,12 @@ router.post("/", async (req, res) => {
       additionalTopics: req.body.additionalTopics,
       isActive: req.body.isActive
     });
+    if (req.body.phoneB && req.body.phoneB !== "") {
+      tutor.phoneB = req.body.phoneB;
+    }
+    if (req.body.secondaryStudy && req.body.secondaryStudy !== "") {
+      tutor.secondaryStudy = req.body.secondaryStudy;
+    }
     try {
       const salt = await bcrypt.genSalt(10);
       tutor.password = await bcrypt.hash(tutor.password, salt);
@@ -249,7 +253,7 @@ router.put("/:id", auth, async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   if (req.user.type === "admin") {
     const tutor = await Tutor.findByIdAndRemove(req.params.id);
 
@@ -307,7 +311,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", auth, async (req, res) => {
   if (req.user.type === "admin" || req.user._id == req.params.id) {
     const tutor = await Tutor.findById(req.params.id);
 

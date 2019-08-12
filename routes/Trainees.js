@@ -100,14 +100,12 @@ router.post("/", async (req, res) => {
       email: req.body.email,
       password: req.body.password,
       phoneA: req.body.phoneA,
-      phoneB: req.body.phoneB,
       birthDate: req.body.birthDate,
       gender: req.body.gender,
       maritalStatus: req.body.maritalStatus,
       activityArea: req.body.activityArea,
       institute: req.body.institute,
       mainStudy: req.body.mainStudy,
-      secondaryStudy: req.body.secondaryStudy,
       academicPlan: req.body.academicPlan,
       studyYear: req.body.studyYear,
       bankAccount: req.body.bankAccount,
@@ -149,6 +147,13 @@ router.post("/", async (req, res) => {
       leavingReason: req.body.leavingReason,
       isDropped: req.body.isDropped
     });
+    if (req.body.phoneB && req.body.phoneB !== "") {
+      trainee.phoneB = req.body.phoneB;
+    }
+    if (req.body.secondaryStudy && req.body.secondaryStudy !== "") {
+      trainee.secondaryStudy = req.body.secondaryStudy;
+    }
+    console.log(req.body);
     try {
       const salt = await bcrypt.genSalt(10);
       trainee.password = await bcrypt.hash(trainee.password, salt);
@@ -215,8 +220,7 @@ router.post("/", async (req, res) => {
         ])
       );
     } catch (err) {
-      res.statusCode = 400;
-      res.send(err.message);
+      res.status(400).send(err.message);
     }
   }
 });
