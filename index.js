@@ -20,11 +20,15 @@ if (!config.get("jwtPrivateKey")) {
   process.exit(1);
 }
 
+const mongoHost = process.env.MONGO_HOST || 'localhost';
+const mongoPort = process.env.MONGO_PORT || '27017';
+const urlDB = `mongodb://admin:admin@${mongoHost}:${mongoPort}/beliba_homa?retryWrites=true&authSource=admin`;
+
 mongoose
-  .connect("mongodb://localhost/beliba_homa")
+  .connect(urlDB, { auth: { authdb: 'admin' }, useNewUrlParser: true })
   .then(() => console.log("Connected to MongoDB..."))
   .catch(err => console.error("Could not connect to MongoDB..."));
-
+  
 app.use(express.json());
 app.use(accessControls);
 app.use("/api/tutors", Tutors);
