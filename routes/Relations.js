@@ -5,11 +5,19 @@ const router = express.Router();
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 
-router.get("/", async (req, res) => {
-  const relations = await Relation.find()
-    .populate("tutor_id", ["_id", "fname", "lname"])
-    .populate("trainee_id", ["_id", "fname", "lname"]);
-  res.send(relations);
+router.get("/", auth, async (req, res) => {
+  if (req.user.type === "admin") {
+    const relations = await Relation.find()
+      .populate("tutor_id", ["_id", "fname", "lname"])
+      .populate("trainee_id", ["_id", "fname", "lname"]);
+    res.send(relations);
+  } else if (req.user.type === "coordinator") {
+  } else if (req.user.type === "tutor") {
+    const relations = await Relation.find({ tutor_id: req.user._id })
+      .populate("tutor_id", ["_id", "fname", "lname"])
+      .populate("trainee_id", ["_id", "fname", "lname"]);
+    res.send(relations);
+  }
 });
 
 router.post("/", async (req, res) => {
