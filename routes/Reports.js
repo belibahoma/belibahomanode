@@ -68,7 +68,6 @@ router.post("/", async (req, res) => {
     report.totalTime += report.spacialMissions
       ? report.spacialMissions.totalTime
       : 0;
-    console.log(report.isServe);
     report.totalTime += report.isBirth ? 8 : 0;
     report.totalTime += report.isMarriage ? 8 : 0;
     report.totalTime += report.isDeathOfFirstDegree ? 20 : 0;
@@ -89,7 +88,11 @@ router.post("/", async (req, res) => {
 
     try {
       const results = await report.save();
-      res.send(results);
+      res.send(
+        results
+          .populate("tutor_id", ["_id", "fname", "lname", "isImpact"])
+          .populate("trainee_id", ["_id", "fname", "lname"])
+      );
     } catch (err) {
       res.status(400).send(err.message);
     }
@@ -154,7 +157,11 @@ router.put("/:id", async (req, res) => {
 
   try {
     report = await report.save();
-    res.send(report);
+    res.send(
+      report
+        .populate("tutor_id", ["_id", "fname", "lname", "isImpact"])
+        .populate("trainee_id", ["_id", "fname", "lname"])
+    );
   } catch (error) {
     res.status(400).send(error.message);
   }
@@ -170,7 +177,9 @@ router.delete("/:id", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
-  const report = await Report.findById(req.params.id);
+  const report = await Report.findById(req.params.id)
+    .populate("tutor_id", ["_id", "fname", "lname", "isImpact"])
+    .populate("trainee_id", ["_id", "fname", "lname"]);
 
   if (!report)
     return res.status(404).send("The report with the given ID was not found.");
