@@ -5,6 +5,10 @@ const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const express = require("express");
 const router = express.Router();
+const linkToWebsite = "localhost:3000/alerts";
+const admin = require("../middleware/admin");
+const sendMail = "./../utils/mailSender";
+const to = "matanya.g@gmail.com";
 
 router.get("/me", auth, async (req, res) => {
   if (req.user.type === "trainee") {
@@ -84,12 +88,29 @@ router.get("/", auth, async (req, res) => {
           "additionalTopics",
           "isActive",
           "leavingReason",
-          "isDropped"
+          "isDropped",
+          "isApproved"
         ]);
       })
     );
   } else {
     res.status(401).send("unauthorized");
+  }
+});
+
+router.post("/approve/:id", [auth, admin], async (req, res) => {
+  let trainee = await Trainee.findByIdAndUpdate(
+    req.params.id,
+    {
+      $set: { isApproved: true }
+    },
+    { new: true }
+  );
+
+  if (!trainee) {
+    return res.status(500).send("משהו השתבש");
+  } else {
+    res.send("החונך אושר בהצלחה");
   }
 });
 
@@ -171,6 +192,13 @@ router.post("/", async (req, res) => {
 
       const token = trainee.generateAuthToken();
 
+      const messageToSend = `<p>הסטודנט ${trainee.fname +
+        " " +
+        trainee.lname} צריך אישור הרשמה</p>
+      <a href="${linkToWebsite}">לחץ כאן כדי להגיע לעמוד האישורים</a>`;
+
+      sendMail(to, "אישור הרשמה לחונך חדש", messageToSend);
+
       res.header("x-auth-token", token).send(
         _.pick(trainee, [
           "_id",
@@ -226,7 +254,8 @@ router.post("/", async (req, res) => {
           "additionalTopics",
           "isActive",
           "leavingReason",
-          "isDropped"
+          "isDropped",
+          "isApproved"
         ])
       );
     } catch (err) {
@@ -347,7 +376,8 @@ router.put("/:id", auth, async (req, res) => {
             "additionalTopics",
             "isActive",
             "leavingReason",
-            "isDropped"
+            "isDropped",
+            "isApproved"
           ])
         );
       } catch (error) {
@@ -427,7 +457,8 @@ router.delete("/:id", auth, async (req, res) => {
         "additionalTopics",
         "isActive",
         "leavingReason",
-        "isDropped"
+        "isDropped",
+        "isApproved"
       ])
     );
   } else {
@@ -503,7 +534,8 @@ router.get("/:id", auth, async (req, res) => {
         "additionalTopics",
         "isActive",
         "leavingReason",
-        "isDropped"
+        "isDropped",
+        "isApproved"
       ])
     );
   } else {

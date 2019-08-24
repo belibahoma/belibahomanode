@@ -1,10 +1,14 @@
 const { Tutor } = require("../model/Tutor");
+const sendMail = "./../utils/mailSender";
 const _ = require("lodash");
 const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const express = require("express");
 const router = express.Router();
+const linkToWebsite = "localhost:3000/alerts";
+const to = "matanya.g@gmail.com";
 
 router.get("/me", auth, async (req, res) => {
   if (req.user.type === "tutor") {
@@ -32,6 +36,22 @@ router.get("/", auth, async (req, res) => {
     res.send(tutors);
   } else {
     res.status(401).send("unauthorized");
+  }
+});
+
+router.post("/approve/:id", [auth, admin], async (req, res) => {
+  let tutor = await Tutor.findByIdAndUpdate(
+    req.params.id,
+    {
+      $set: { isApproved: true }
+    },
+    { new: true }
+  );
+
+  if (!tutor) {
+    return res.status(500).send("משהו השתבש");
+  } else {
+    res.send("החונך אושר בהצלחה");
   }
 });
 
@@ -98,6 +118,13 @@ router.post("/", async (req, res) => {
       tutor = await tutor.save();
 
       const token = tutor.generateAuthToken();
+
+      const messageToSend = `<p>הסטודנט ${tutor.fname +
+        " " +
+        tutor.lname} צריך אישור הרשמה</p>
+      <a href="${linkToWebsite}">לחץ כאן כדי להגיע לעמוד האישורים</a>`;
+
+      sendMail(to, "אישור הרשמה לחונך חדש", messageToSend);
 
       res.header("x-auth-token", token).send(
         _.pick(tutor, [
