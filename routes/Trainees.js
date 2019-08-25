@@ -5,11 +5,20 @@ const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const express = require("express");
 const router = express.Router();
+const linkToWebsite = "localhost:3000/alerts";
+const admin = require("../middleware/admin");
+const sendMail = "./../utils/mailSender";
+const to = "matanya.g@gmail.com";
 
 router.get("/me", auth, async (req, res) => {
   if (req.user.type === "trainee") {
     const trainee = await Trainee.findById(req.user._id).select("-password");
-    res.send(trainee);
+    res
+      .send(trainee)
+      .populate("institute")
+      .populate("activityArea")
+      .populate("mainStudy")
+      .populate("secondaryStudy");
   } else {
     res.status(401).send("unauthorized");
   }
@@ -17,7 +26,12 @@ router.get("/me", auth, async (req, res) => {
 
 router.get("/", auth, async (req, res) => {
   if (req.user.type === "admin") {
-    const trainees = await Trainee.find().sort("fname");
+    const trainees = await Trainee.find()
+      .sort("fname")
+      .populate("institute")
+      .populate("activityArea")
+      .populate("mainStudy")
+      .populate("secondaryStudy");
     res.send(
       trainees.map(trainee => {
         return _.pick(trainee, [
@@ -74,12 +88,29 @@ router.get("/", auth, async (req, res) => {
           "additionalTopics",
           "isActive",
           "leavingReason",
-          "isDropped"
+          "isDropped",
+          "isApproved"
         ]);
       })
     );
   } else {
     res.status(401).send("unauthorized");
+  }
+});
+
+router.post("/approve/:id", [auth, admin], async (req, res) => {
+  let trainee = await Trainee.findByIdAndUpdate(
+    req.params.id,
+    {
+      $set: { isApproved: true }
+    },
+    { new: true }
+  );
+
+  if (!trainee) {
+    return res.status(500).send("משהו השתבש");
+  } else {
+    res.send("החונך אושר בהצלחה");
   }
 });
 
@@ -100,14 +131,12 @@ router.post("/", async (req, res) => {
       email: req.body.email,
       password: req.body.password,
       phoneA: req.body.phoneA,
-      phoneB: req.body.phoneB,
       birthDate: req.body.birthDate,
       gender: req.body.gender,
       maritalStatus: req.body.maritalStatus,
       activityArea: req.body.activityArea,
       institute: req.body.institute,
       mainStudy: req.body.mainStudy,
-      secondaryStudy: req.body.secondaryStudy,
       academicPlan: req.body.academicPlan,
       studyYear: req.body.studyYear,
       bankAccount: req.body.bankAccount,
@@ -149,12 +178,26 @@ router.post("/", async (req, res) => {
       leavingReason: req.body.leavingReason,
       isDropped: req.body.isDropped
     });
+    if (req.body.phoneB && req.body.phoneB !== "") {
+      trainee.phoneB = req.body.phoneB;
+    }
+    if (req.body.secondaryStudy && req.body.secondaryStudy !== "") {
+      trainee.secondaryStudy = req.body.secondaryStudy;
+    }
+    console.log(req.body);
     try {
       const salt = await bcrypt.genSalt(10);
       trainee.password = await bcrypt.hash(trainee.password, salt);
       trainee = await trainee.save();
 
       const token = trainee.generateAuthToken();
+
+      const messageToSend = `<p>הסטודנט ${trainee.fname +
+        " " +
+        trainee.lname} צריך אישור הרשמה</p>
+      <a href="${linkToWebsite}">לחץ כאן כדי להגיע לעמוד האישורים</a>`;
+
+      sendMail(to, "אישור הרשמה לחונך חדש", messageToSend);
 
       res.header("x-auth-token", token).send(
         _.pick(trainee, [
@@ -211,12 +254,12 @@ router.post("/", async (req, res) => {
           "additionalTopics",
           "isActive",
           "leavingReason",
-          "isDropped"
+          "isDropped",
+          "isApproved"
         ])
       );
     } catch (err) {
-      res.statusCode = 400;
-      res.send(err.message);
+      res.status(400).send(err.message);
     }
   }
 });
@@ -333,7 +376,8 @@ router.put("/:id", auth, async (req, res) => {
             "additionalTopics",
             "isActive",
             "leavingReason",
-            "isDropped"
+            "isDropped",
+            "isApproved"
           ])
         );
       } catch (error) {
@@ -347,7 +391,11 @@ router.put("/:id", auth, async (req, res) => {
 
 router.delete("/:id", auth, async (req, res) => {
   if (req.user.type === "admin") {
-    const trainee = await Trainee.findByIdAndRemove(req.params.id);
+    const trainee = await Trainee.findByIdAndRemove(req.params.id)
+      .populate("institute")
+      .populate("activityArea")
+      .populate("mainStudy")
+      .populate("secondaryStudy");
 
     if (!trainee)
       return res
@@ -409,7 +457,8 @@ router.delete("/:id", auth, async (req, res) => {
         "additionalTopics",
         "isActive",
         "leavingReason",
-        "isDropped"
+        "isDropped",
+        "isApproved"
       ])
     );
   } else {
@@ -419,7 +468,11 @@ router.delete("/:id", auth, async (req, res) => {
 
 router.get("/:id", auth, async (req, res) => {
   if (req.user.type === "admin" || req.user._id == req.params.id) {
-    const trainee = await Trainee.findById(req.params.id);
+    const trainee = await Trainee.findById(req.params.id)
+      .populate("institute")
+      .populate("activityArea")
+      .populate("mainStudy")
+      .populate("secondaryStudy");
 
     if (!trainee)
       return res
@@ -481,7 +534,8 @@ router.get("/:id", auth, async (req, res) => {
         "additionalTopics",
         "isActive",
         "leavingReason",
-        "isDropped"
+        "isDropped",
+        "isApproved"
       ])
     );
   } else {

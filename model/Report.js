@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
 
 const reportSchema = new mongoose.Schema({
-  tutorId: { type: String, required: true },
+  tutor_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Tutor",
+    required: true
+  },
   type: {
     type: String,
     enum: ["ordinary", "group", "other"],
@@ -14,9 +18,28 @@ const reportSchema = new mongoose.Schema({
     }
   },
   //from here
-  description: { type: String, required: true },
-  knowledgeRank: { type: Number, min: 1, max: 9, required: true },
-  connectionRank: { type: Number, min: 1, max: 9, required: true },
+  description: {
+    type: String,
+    required: function() {
+      return this.type === "ordinary" || this.type === "group";
+    }
+  },
+  knowledgeRank: {
+    type: Number,
+    min: 1,
+    max: 10,
+    required: function() {
+      return this.type === "ordinary";
+    }
+  },
+  connectionRank: {
+    type: Number,
+    min: 1,
+    max: 10,
+    required: function() {
+      return this.type === "ordinary";
+    }
+  },
   isNeedAdmin: { type: Boolean, default: false },
   //until here
   isCasingApproved: { type: Boolean, default: false },
@@ -33,8 +56,9 @@ const reportSchema = new mongoose.Schema({
   isMarriage: { type: Boolean, default: false },
   isDeathOfFirstDegree: { type: Boolean, default: false },
   isHappened: { type: Boolean, default: false },
-  traineeId: {
-    type: String,
+  trainee_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Trainee",
     required: function() {
       return this.type === "ordinary";
     }

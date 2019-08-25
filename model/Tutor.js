@@ -144,6 +144,7 @@ const tutorSchema = new mongoose.Schema({
   isGraduated: { type: Boolean, default: false },
   isFoundJob: { type: Boolean, default: false },
   isJobInStudyFelid: { type: Boolean, default: false },
+  isApproved: { type: Boolean, default: false },
   // until here is the common part
   isImpact: { type: Boolean, default: false },
   isShachak: { type: Boolean, default: false },

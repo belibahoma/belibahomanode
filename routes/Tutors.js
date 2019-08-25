@@ -1,14 +1,23 @@
 const { Tutor } = require("../model/Tutor");
+const sendMail = "./../utils/mailSender";
 const _ = require("lodash");
 const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const express = require("express");
 const router = express.Router();
+const linkToWebsite = "localhost:3000/alerts";
+const to = "matanya.g@gmail.com";
 
 router.get("/me", auth, async (req, res) => {
   if (req.user.type === "tutor") {
-    const tutor = await Tutor.findById(req.user._id).select("-password");
+    const tutor = await Tutor.findById(req.user._id)
+      .select("-password")
+      .populate("institute")
+      .populate("activityArea")
+      .populate("mainStudy")
+      .populate("secondaryStudy");
     res.send(tutor);
   } else {
     res.status(401).send("unauthorized");
@@ -19,10 +28,30 @@ router.get("/", auth, async (req, res) => {
   if (req.user.type === "admin") {
     const tutors = await Tutor.find()
       .sort("fname")
-      .select("-password");
+      .select("-password")
+      .populate("institute")
+      .populate("activityArea")
+      .populate("mainStudy")
+      .populate("secondaryStudy");
     res.send(tutors);
   } else {
     res.status(401).send("unauthorized");
+  }
+});
+
+router.post("/approve/:id", [auth, admin], async (req, res) => {
+  let tutor = await Tutor.findByIdAndUpdate(
+    req.params.id,
+    {
+      $set: { isApproved: true }
+    },
+    { new: true }
+  );
+
+  if (!tutor) {
+    return res.status(500).send("משהו השתבש");
+  } else {
+    res.send("החונך אושר בהצלחה");
   }
 });
 
@@ -43,14 +72,12 @@ router.post("/", async (req, res) => {
       email: req.body.email,
       password: req.body.password,
       phoneA: req.body.phoneA,
-      phoneB: req.body.phoneB,
       birthDate: req.body.birthDate,
       gender: req.body.gender,
       maritalStatus: req.body.maritalStatus,
       activityArea: req.body.activityArea,
       institute: req.body.institute,
       mainStudy: req.body.mainStudy,
-      secondaryStudy: req.body.secondaryStudy,
       academicPlan: req.body.academicPlan,
       studyYear: req.body.studyYear,
       bankAccount: req.body.bankAccount,
@@ -79,12 +106,25 @@ router.post("/", async (req, res) => {
       additionalTopics: req.body.additionalTopics,
       isActive: req.body.isActive
     });
+    if (req.body.phoneB && req.body.phoneB !== "") {
+      tutor.phoneB = req.body.phoneB;
+    }
+    if (req.body.secondaryStudy && req.body.secondaryStudy !== "") {
+      tutor.secondaryStudy = req.body.secondaryStudy;
+    }
     try {
       const salt = await bcrypt.genSalt(10);
       tutor.password = await bcrypt.hash(tutor.password, salt);
       tutor = await tutor.save();
 
       const token = tutor.generateAuthToken();
+
+      const messageToSend = `<p>הסטודנט ${tutor.fname +
+        " " +
+        tutor.lname} צריך אישור הרשמה</p>
+      <a href="${linkToWebsite}">לחץ כאן כדי להגיע לעמוד האישורים</a>`;
+
+      sendMail(to, "אישור הרשמה לחונך חדש", messageToSend);
 
       res.header("x-auth-token", token).send(
         _.pick(tutor, [
@@ -249,9 +289,13 @@ router.put("/:id", auth, async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   if (req.user.type === "admin") {
-    const tutor = await Tutor.findByIdAndRemove(req.params.id);
+    const tutor = await Tutor.findByIdAndRemove(req.params.id)
+      .populate("institute")
+      .populate("activityArea")
+      .populate("mainStudy")
+      .populate("secondaryStudy");
 
     if (!tutor)
       return res.status(404).send("The tutor with the given ID was not found.");
@@ -307,9 +351,13 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", auth, async (req, res) => {
   if (req.user.type === "admin" || req.user._id == req.params.id) {
-    const tutor = await Tutor.findById(req.params.id);
+    const tutor = await Tutor.findById(req.params.id)
+      .populate("institute")
+      .populate("activityArea")
+      .populate("mainStudy")
+      .populate("secondaryStudy");
 
     if (!tutor)
       return res.status(404).send("The tutor with the given ID was not found.");

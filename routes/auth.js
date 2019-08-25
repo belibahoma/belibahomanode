@@ -26,6 +26,12 @@ router.post("/", async (req, res) => {
     if (!user) {
       res.statusCode = 400;
       res.send("Invalid username or password");
+    }
+    if (
+      (user.userType === "trainee" || user.userType === "tutor") &&
+      !user.isApproved
+    ) {
+      res.status(403).send("Wait for manager approval");
     } else {
       const token = user.generateAuthToken();
       res.send({ token: token, user: _.omit(user.toObject(), ["password"]) });

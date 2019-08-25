@@ -5,25 +5,37 @@ const mongoose = require("mongoose");
 const express = require("express");
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  const reports = await Report.find().sort("name");
+router.get("/", auth, async (req, res) => {
+  let reports = [];
+  if (req.user.type === "admin") {
+    reports = await Report.find()
+      .populate("tutor_id", ["_id", "fname", "lname", "isImpact"])
+      .populate("trainee_id", ["_id", "fname", "lname"]);
+  } else if (req.user.type === "coordinator") {
+  } else if (req.user.type === "tutor") {
+    reports = await Report.find({ tutor_id: req.user._id })
+      .populate("tutor_id", ["_id", "fname", "lname", "isImpact"])
+      .populate("trainee_id", ["_id", "fname", "lname"]);
+  }
+
   res.send(reports);
 });
 
 router.post("/", async (req, res) => {
   //   const { error } = validate(req.body);
   //   if (error) return res.status(400).send(error.details[0].message);
+
   let report = await Report.findOne({
-    tutorId: req.body.tutorId,
+    tutor_id: req.body.tutor_id,
+    trainee_id: req.body.trainee_id,
     type: req.body.type,
     date: req.body.date
   });
-  console.log(report, req.body.tutorId, req.body.type, req.body.date);
   if (report) {
     res.status(400).send("הדיווח כבר קיים במאגר");
   } else {
     report = new Report({
-      tutorId: req.body.tutorId,
+      tutor_id: req.body.tutor_id,
       type: req.body.type,
       location: req.body.location,
       isCasingApproved: req.body.isCasingApproved,
@@ -36,16 +48,18 @@ router.post("/", async (req, res) => {
       chavrutaTime: req.body.chavrutaTime ? req.body.chavrutaTime : 0,
       casingTime: req.body.casingTime ? req.body.casingTime : 0,
       reportTime: req.body.reportTime ? req.body.reportTime : 0,
-      serveTime: req.body.serveTime,
-      isServe: req.body.isServe,
-      isBirth: req.body.isBirth,
-      isMarriage: req.body.isMarriage,
-      isDeathOfFirstDegree: req.body.isDeathOfFirstDegree,
-      isHappened: req.body.isHappened,
-      traineeId: req.body.traineeId,
-      spacialMissions: req.body.spacialMissions
+      serveTime: req.body.serveTime || false,
+      isServe: req.body.isServe || false,
+      isBirth: req.body.isBirth || false,
+      isMarriage: req.body.isMarriage || false,
+      isDeathOfFirstDegree: req.body.isDeathOfFirstDegree || false,
+      isHappened: req.body.isHappened || false,
+      spacialMissions: req.body.spacialMissions || ""
     });
 
+    if (req.body.trainee_id && req.body.trainee_id !== "error") {
+      report.trainee_id = req.body.trainee_id;
+    }
     report.totalTime =
       report.studyTime +
       report.chavrutaTime +
@@ -57,14 +71,16 @@ router.post("/", async (req, res) => {
     report.totalTime += report.isBirth ? 8 : 0;
     report.totalTime += report.isMarriage ? 8 : 0;
     report.totalTime += report.isDeathOfFirstDegree ? 20 : 0;
-    report.totalTime += report.isServe
-      ? function() {
-          return Math.round(
-            (report.serveTime.end - report.serveTime.start) /
-              (1000 * 60 * 60 * 24)
-          );
-        }
-      : 0;
+    report.totalTime += report.isServe ? calculateServe(report) : 0;
+
+    function calculateServe(report) {
+      const { serveTime } = report;
+      const num = Math.round(
+        (serveTime.end - serveTime.start) / (1000 * 60 * 60 * 24)
+      );
+      console.log("num", num);
+      return num > 21 ? num + 5 : num;
+    }
 
     report.timeForTrainee = report.isHappened
       ? report.studyTime + report.chavrutaTime
@@ -72,7 +88,11 @@ router.post("/", async (req, res) => {
 
     try {
       const results = await report.save();
-      res.send(results);
+      res.send(
+        results
+          .populate("tutor_id", ["_id", "fname", "lname", "isImpact"])
+          .populate("trainee_id", ["_id", "fname", "lname"])
+      );
     } catch (err) {
       res.status(400).send(err.message);
     }
@@ -88,7 +108,7 @@ router.put("/:id", async (req, res) => {
   if (!report)
     return res.status(404).send("The report with the given ID was not found.");
 
-  report.tutorId = req.body.tutorId;
+  report.tutor_id = req.body.tutor_id;
   report.type = req.body.type;
   report.location = req.body.location;
   report.isCasingApproved = req.body.isCasingApproved;
@@ -107,7 +127,7 @@ router.put("/:id", async (req, res) => {
   report.isMarriage = req.body.isMarriage;
   report.isDeathOfFirstDegree = req.body.isDeathOfFirstDegree;
   report.isHappened = req.body.isHappened;
-  report.traineeId = req.body.traineeId;
+  report.trainee_id = req.body.trainee_id;
   report.spacialMissions = req.body.spacialMissions;
 
   report.totalTime =
@@ -137,7 +157,11 @@ router.put("/:id", async (req, res) => {
 
   try {
     report = await report.save();
-    res.send(report);
+    res.send(
+      report
+        .populate("tutor_id", ["_id", "fname", "lname", "isImpact"])
+        .populate("trainee_id", ["_id", "fname", "lname"])
+    );
   } catch (error) {
     res.status(400).send(error.message);
   }
@@ -153,7 +177,9 @@ router.delete("/:id", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
-  const report = await Report.findById(req.params.id);
+  const report = await Report.findById(req.params.id)
+    .populate("tutor_id", ["_id", "fname", "lname", "isImpact"])
+    .populate("trainee_id", ["_id", "fname", "lname"]);
 
   if (!report)
     return res.status(404).send("The report with the given ID was not found.");

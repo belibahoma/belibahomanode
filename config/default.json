@@ -1,3 +1,5 @@
 {
-  "jwtPrivateKey": ""
+  "jwtPrivateKey": "node_jwtPrivateKey",
+  "mailUsername": "node_mailUsername",
+  "mailPassword": "node_mailPassword"
 }
