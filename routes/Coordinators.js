@@ -8,9 +8,9 @@ const router = express.Router();
 
 router.get("/me", auth, async (req, res) => {
   if (req.user.type === "coordinator") {
-    const coordinator = await Coordinator.findById(req.user._id).select(
-      "-password"
-    );
+    const coordinator = await Coordinator.findById(req.user._id)
+      .select("-password")
+      .populate("activityAreas");
     res.send(coordinator);
   } else {
     res.status(401).send("unauthorized");
@@ -19,7 +19,9 @@ router.get("/me", auth, async (req, res) => {
 
 router.get("/", auth, async (req, res) => {
   if (req.user.type === "admin") {
-    const coordinators = await Coordinator.find().sort("fname");
+    const coordinators = await Coordinator.find()
+      .sort("fname")
+      .populate("activityAreas");
     res.send(
       coordinators.map(coordinator => {
         return _.pick(coordinator, [
@@ -108,13 +110,13 @@ router.put("/:id", auth, async (req, res) => {
       coordinator.phone = req.body.phone;
       coordinator.activityAreas = req.body.activityAreas;
       try {
-        if(!req.body.password){
+        if (!req.body.password) {
           coordinator.password = req.body.password;
           const salt = await bcrypt.genSalt(10);
           coordinator.password = await bcrypt.hash(coordinator.password, salt);
         }
 
-        coordinator = await coordinator.save();
+        coordinator = await coordinator.save().populate("activityAreas");
         res.send(
           _.pick(coordinator, [
             "_id",
@@ -164,7 +166,9 @@ router.delete("/:id", auth, async (req, res) => {
 
 router.get("/:id", auth, async (req, res) => {
   if (req.user.type === "admin" || req.user._id == req.params.id) {
-    const coordinator = await Coordinator.findById(req.params.id);
+    const coordinator = await Coordinator.findById(req.params.id).populate(
+      "activityAreas"
+    );
 
     if (!coordinator)
       return res
