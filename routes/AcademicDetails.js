@@ -10,7 +10,7 @@ router.get("/", async (req, res) => {
   res.send(academicDetails);
 });
 
-router.post("/", [auth, admin], async (req, res) => {
+router.post("/",  async (req, res) => {
   //   const { error } = validate(req.body);
   //   if (error) return res.status(400).send(error.details[0].message);
   let academicDetail = await AcademicDetail.findOne({ name: req.body.name });
@@ -31,7 +31,7 @@ router.post("/", [auth, admin], async (req, res) => {
   }
 });
 
-router.put("/:id", [auth, admin], async (req, res) => {
+router.put("/:id",  async (req, res) => {
   //   const { error } = validate(req.body);
   //   if (error) return res.status(400).send(error.details[0].message);
 
@@ -54,7 +54,7 @@ router.put("/:id", [auth, admin], async (req, res) => {
   res.send(academicDetail);
 });
 
-router.delete("/:id", [auth, admin], async (req, res) => {
+router.delete("/:id",  async (req, res) => {
   const academicDetail = await AcademicDetail.findByIdAndRemove(req.params.id);
 
   if (!academicDetail)

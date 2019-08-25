@@ -61,7 +61,7 @@ router.post("/", auth, async (req, res) => {
       });
       try {
         const salt = await bcrypt.genSalt(10);
-        trainee.password = await bcrypt.hash(trainee.password, salt);
+        coordinator.password = await bcrypt.hash(coordinator.password, salt);
         coordinator = await coordinator.save();
 
         const token = coordinator.generateAuthToken();
@@ -105,12 +105,16 @@ router.put("/:id", auth, async (req, res) => {
       coordinator.fname = req.body.fname;
       coordinator.lname = req.body.lname;
       coordinator.email = req.body.email;
-      coordinator.password = req.body.password;
       coordinator.phone = req.body.phone;
       coordinator.activityAreas = req.body.activityAreas;
       try {
-        const salt = await bcrypt.genSalt(10);
-        trainee.password = await bcrypt.hash(trainee.password, salt);
+        if(!coordinator.password){
+          coordinator.password = req.body.password;
+
+          const salt = await bcrypt.genSalt(10);
+          coordinator.password = await bcrypt.hash(coordinator.password, salt);
+        }
+
         coordinator = await coordinator.save();
         res.send(
           _.pick(coordinator, [
