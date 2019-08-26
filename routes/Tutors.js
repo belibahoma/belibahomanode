@@ -1,5 +1,5 @@
 const { Tutor } = require("../model/Tutor");
-const sendMail = "./../utils/mailSender";
+const sendToMail = require("../utils/mailSender.js");
 const _ = require("lodash");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
@@ -124,7 +124,7 @@ router.post("/", async (req, res) => {
         tutor.lname} צריך אישור הרשמה</p>
       <a href="${linkToWebsite}">לחץ כאן כדי להגיע לעמוד האישורים</a>`;
 
-      sendMail(to, "אישור הרשמה לחונך חדש", messageToSend);
+      sendToMail(to, "אישור הרשמה לחונך חדש", messageToSend);
 
       res.header("x-auth-token", token).send(
         _.pick(tutor, [

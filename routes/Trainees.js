@@ -7,7 +7,7 @@ const express = require("express");
 const router = express.Router();
 const linkToWebsite = "localhost:3000/alerts";
 const admin = require("../middleware/admin");
-const sendMail = "./../utils/mailSender";
+const sendToMail = require("../utils/mailSender");
 const to = "matanya.g@gmail.com";
 
 router.get("/me", auth, async (req, res) => {
@@ -170,9 +170,9 @@ router.post("/", async (req, res) => {
       previousDegree: req.body.previousDegree,
       WantDetailsAbout: req.body.WantDetailsAbout,
       isServed: req.body.isServed,
-      mathLevel: req.body.mathLevel,
-      englishLevel: req.body.englishLevel,
-      physicsLevel: req.body.physicsLevel,
+      mathLevel: req.body.mathLevel === "N/A" ? 0 : req.body.mathLevel,
+      englishLevel: req.body.englishLevel === "N/A" ? 0 : req.body.englishLevel,
+      physicsLevel: req.body.physicsLevel === "N/A" ? 0 : req.body.physicsLevel,
       additionalTopics: req.body.additionalTopics,
       isActive: req.body.isActive,
       leavingReason: req.body.leavingReason,
@@ -197,7 +197,7 @@ router.post("/", async (req, res) => {
         trainee.lname} צריך אישור הרשמה</p>
       <a href="${linkToWebsite}">לחץ כאן כדי להגיע לעמוד האישורים</a>`;
 
-      sendMail(to, "אישור הרשמה לחונך חדש", messageToSend);
+      sendToMail(to, "אישור הרשמה לחונך חדש", messageToSend);
 
       res.header("x-auth-token", token).send(
         _.pick(trainee, [
