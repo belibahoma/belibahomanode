@@ -12,13 +12,13 @@ const to = "matanya.g@gmail.com";
 
 router.get("/me", auth, async (req, res) => {
   if (req.user.type === "trainee") {
-    const trainee = await Trainee.findById(req.user._id).select("-password");
-    res
-      .send(trainee)
+    const trainee = await Trainee.findById(req.user._id)
+      .select("-password -stuffNotes")
       .populate("institute")
       .populate("activityArea")
       .populate("mainStudy")
       .populate("secondaryStudy");
+    res.send(trainee);
   } else {
     res.status(401).send("unauthorized");
   }
@@ -60,12 +60,12 @@ router.get("/", auth, async (req, res) => {
           "religiousText",
           "unavailableTimes",
           "notes",
-          "stuffNotes",
           "isNeedAdditionalRelation",
           "activeStatus",
           "isFinnishPreparatory",
           "isGraduated",
           "isFoundJob",
+          "stuffNotes",
           "isJobInStudyFelid",
           // until here is the common part
           "isInMagid",
@@ -280,7 +280,6 @@ router.put("/:id", auth, async (req, res) => {
       trainee.lname = req.body.lname;
       trainee.email = req.body.email;
       //TODO change password case
-      trainee.password = req.body.password;
       trainee.phoneA = req.body.phoneA;
       trainee.phoneB = req.body.phoneB;
       trainee.birthDate = req.body.birthDate;
@@ -318,8 +317,11 @@ router.put("/:id", auth, async (req, res) => {
       trainee.additionalTopics = req.body.additionalTopics;
       trainee.isActive = req.body.isActive;
       try {
-        const salt = await bcrypt.genSalt(10);
-        trainee.password = await bcrypt.hash(trainee.password, salt);
+        if (req.body.password) {
+          trainee.password = req.body.password;
+          const salt = await bcrypt.genSalt(10);
+          trainee.password = await bcrypt.hash(trainee.password, salt);
+        }
         trainee = trainee.save();
         res.send(
           _.pick(trainee, [
@@ -391,7 +393,7 @@ router.put("/:id", auth, async (req, res) => {
 
 router.delete("/:id", auth, async (req, res) => {
   if (req.user.type === "admin") {
-    const trainee = await Trainee.findByIdAndRemove(req.params.id)
+    const trainee = await Trainee.findByIdAndUpdate(req.params.id)
       .populate("institute")
       .populate("activityArea")
       .populate("mainStudy")
@@ -403,63 +405,7 @@ router.delete("/:id", auth, async (req, res) => {
         .send("The trainee with the given ID was not found.");
 
     res.send(
-      _.pick(trainee, [
-        "_id",
-        "userType",
-        "id",
-        "fname",
-        "lname",
-        "email",
-        "phoneA",
-        "phoneB",
-        "birthDate",
-        "gender",
-        "maritalStatus",
-        "activityArea",
-        "institute",
-        "mainStudy",
-        "secondaryStudy",
-        "academicPlan",
-        "studyYear",
-        "bankAccount",
-        "realAddress",
-        "currentAddress",
-        "activeYears",
-        "religiousStatus",
-        "religiousText",
-        "unavailableTimes",
-        "notes",
-        "stuffNotes",
-        "isNeedAdditionalRelation",
-        "activeStatus",
-        "isFinnishPreparatory",
-        "isGraduated",
-        "isFoundJob",
-        "isJobInStudyFelid",
-        // until here is the common part
-        "isInMagid",
-        "isLiveInSelectedCities",
-        "isRegisteredToKivun",
-        "needsHelpIn",
-        "workStatus",
-        "workTitle",
-        "isLearnedInYeshiva",
-        "yeshivaTimes",
-        "isHaveAnotherProfessionalTraining",
-        "previousProfession",
-        "isHaveAnotherDegree",
-        "previousDegree",
-        "WantDetailsAbout",
-        "isServed",
-        "mathLevel",
-        "englishLevel",
-        "physicsLevel",
-        "additionalTopics",
-        "isActive",
-        "leavingReason",
-        "isDropped",
-        "isApproved"
-      ])
+      `החניך ${trainee.fname} ${trainee.lname} אינו זמין לשיבוצים חדשים`
     );
   } else {
     res.status(401).send("unauthorized");

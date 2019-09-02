@@ -13,7 +13,7 @@ const to = "matanya.g@gmail.com";
 router.get("/me", auth, async (req, res) => {
   if (req.user.type === "tutor") {
     const tutor = await Tutor.findById(req.user._id)
-      .select("-password")
+      .select("-password -stuffNotes")
       .populate("institute")
       .populate("activityArea")
       .populate("mainStudy")
@@ -193,7 +193,6 @@ router.put("/:id", auth, async (req, res) => {
       tutor.lname = req.body.lname;
       tutor.email = req.body.email;
       //TODO old password
-      tutor.password = req.body.password;
       tutor.phoneA = req.body.phoneA;
       tutor.phoneB = req.body.phoneB;
       tutor.birthDate = req.body.birthDate;
@@ -230,8 +229,12 @@ router.put("/:id", auth, async (req, res) => {
       tutor.physicsLevel = req.body.physicsLevel;
       tutor.additionalTopics = req.body.additionalTopics;
       tutor.isActive = req.body.isActive;
-      const salt = await bcrypt.genSalt(10);
-      tutor.password = await bcrypt.hash(tutor.password, salt);
+
+      if (req.body.password) {
+        tutor.password = req.body.password;
+        const salt = await bcrypt.genSalt(10);
+        tutor.password = await bcrypt.hash(tutor.password, salt);
+      }
       try {
         tutor = await tutor.save();
         res.send(
@@ -291,7 +294,7 @@ router.put("/:id", auth, async (req, res) => {
 
 router.delete("/:id", auth, async (req, res) => {
   if (req.user.type === "admin") {
-    const tutor = await Tutor.findByIdAndRemove(req.params.id)
+    const tutor = await Tutor.findByIdAndUpdate(req.params.id)
       .populate("institute")
       .populate("activityArea")
       .populate("mainStudy")
@@ -300,52 +303,7 @@ router.delete("/:id", auth, async (req, res) => {
     if (!tutor)
       return res.status(404).send("The tutor with the given ID was not found.");
 
-    res.send(
-      _.pick(tutor, [
-        "_id",
-        "userType",
-        "id",
-        "fname",
-        "lname",
-        "email",
-        "phoneA",
-        "phoneB",
-        "birthDate",
-        "gender",
-        "maritalStatus",
-        "activityArea",
-        "institute",
-        "mainStudy",
-        "secondaryStudy",
-        "academicPlan",
-        "studyYear",
-        "bankAccount",
-        "realAddress",
-        "currentAddress",
-        "activeYears",
-        "religiousStatus",
-        "religiousText",
-        "unavailableTimes",
-        "notes",
-        "stuffNotes",
-        "isNeedAdditionalRelation",
-        "activeStatus",
-        "isFinnishPreparatory",
-        "isGraduated",
-        "isFoundJob",
-        "isJobInStudyFelid",
-        // until here is the common part
-        "isImpact",
-        "isShachak",
-        "isForAcademicPoints",
-        "isCityScholarship",
-        "mathLevel",
-        "englishLevel",
-        "physicsLevel",
-        "additionalTopics",
-        "isActive"
-      ])
-    );
+    res.send(`החונך ${tutor.fname} ${tutor.lname} אינו זמין לשיבוצים חדשים`);
   } else {
     res.status(401).send("Unauthorized");
   }

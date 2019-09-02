@@ -89,8 +89,9 @@ router.get("/approve/trainee/:id", auth, async (req, res) => {
     try {
       const user = await Trainee.findById(req.user._id);
       user.isApproved = true;
+      user.isActive = true;
       user.save();
-      return res.send(`${user.fname} ${user.lname} is approved successfully`);
+      return res.send(`${user.fname} ${user.lname} approved successfully`);
     } catch (error) {
       return res.status(400).send(error.message);
     }
@@ -104,6 +105,7 @@ router.get("/approve/tutor/:id", auth, async (req, res) => {
     try {
       const user = await Tutor.findById(req.user._id);
       user.isApproved = true;
+      user.isActive = true;
       user.save();
       return res.send(`${user.fname} ${user.lname} is approved successfully`);
     } catch (error) {
