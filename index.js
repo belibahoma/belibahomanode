@@ -44,6 +44,7 @@ app.use("/api/institutes", Institutes);
 app.use("/api/relations", Relations);
 app.use("/api/areas", Areas);
 app.use("/api/auth", auth);
+require("./utils/prod")(app);
 // app.use('/api/customers', customers);
 
 const port = process.env.PORT || 8080;
