@@ -1,5 +1,6 @@
 {
   "jwtPrivateKey": "node_jwtPrivateKey",
   "mailUsername": "node_mailUsername",
-  "mailPassword": "node_mailPassword"
+  "mailPassword": "node_mailPassword",
+  "mongoAddress": "node_mongoAddress"
 }

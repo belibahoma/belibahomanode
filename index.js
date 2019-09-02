@@ -23,7 +23,9 @@ if (!config.get("jwtPrivateKey")) {
 const mongoHost = process.env.MONGO_HOST || "localhost";
 const mongoPort = process.env.MONGO_PORT || "27017";
 //const urlDB = `mongodb://admin:admin@${mongoHost}:${mongoPort}/beliba_homa?retryWrites=true&authSource=admin`;
-const urlDB = `mongodb://${mongoHost}:${mongoPort}/beliba_homa`;
+const urlDB =
+  config.get("mongoAddress") ||
+  `mongodb://${mongoHost}:${mongoPort}/beliba_homa`;
 
 mongoose
   .connect(urlDB)
