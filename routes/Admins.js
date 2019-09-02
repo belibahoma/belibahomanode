@@ -36,52 +36,52 @@ router.post("/", async (req, res) => {
   //TODO
   //   const { error } = validate(req.body);
   //   if (error) return res.status(400).send(error.details[0].message);
-  const user = req.user;
-  if (user.type == "admin") {
-    let admin = await Admin.findOne({ id: req.body.id });
-    if (admin) {
-      res.statusCode = 400;
-      res.send("the user already exists");
-    } else {
-      admin = new Admin({
-        userType: "admin",
-        id: req.body.id,
-        fname: req.body.fname,
-        lname: req.body.lname,
-        email: req.body.email,
-        password: req.body.password,
-        phone: req.body.phone
-      });
+  // const user = req.user;
+  // if (user.type == "admin") {
+  //   let admin = await Admin.findOne({ id: req.body.id });
+  //   if (admin) {
+  //     res.statusCode = 400;
+  //     res.send("the user already exists");
+  //   } else {
+  admin = new Admin({
+    userType: "admin",
+    id: req.body.id,
+    fname: req.body.fname,
+    lname: req.body.lname,
+    email: req.body.email,
+    password: req.body.password,
+    phone: req.body.phone
+  });
 
-      const salt = await bcrypt.genSalt(10);
-      admin.password = await bcrypt.hash(admin.password, salt);
+  const salt = await bcrypt.genSalt(10);
+  admin.password = await bcrypt.hash(admin.password, salt);
 
-      try {
-        admin = await admin.save();
+  try {
+    admin = await admin.save();
 
-        const token = admin.generateAuthToken();
+    const token = admin.generateAuthToken();
 
-        res
-          .header("x-auth-token", token)
-          .send(
-            _.pick(admin, [
-              "_id",
-              "userType",
-              "id",
-              "fname",
-              "lname",
-              "email",
-              "phone"
-            ])
-          );
-      } catch (err) {
-        res.statusCode = 400;
-        res.send(err.message);
-      }
-    }
-  } else {
-    res.status(401).send("Unauthorized");
+    res
+      .header("x-auth-token", token)
+      .send(
+        _.pick(admin, [
+          "_id",
+          "userType",
+          "id",
+          "fname",
+          "lname",
+          "email",
+          "phone"
+        ])
+      );
+  } catch (err) {
+    res.statusCode = 400;
+    res.send(err.message);
   }
+  // }
+  // } else {
+  //   res.status(401).send("Unauthorized");
+  // }
 });
 
 router.get("/approve/trainee/:id", auth, async (req, res) => {
