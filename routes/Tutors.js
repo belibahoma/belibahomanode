@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 const express = require("express");
 const router = express.Router();
 const linkToWebsite = "localhost:3000/alerts";
-const to = "matanya.g@gmail.com";
+const to = "belibahoma@gmail.com";
 
 router.get("/me", auth, async (req, res) => {
   if (req.user.type === "tutor") {
@@ -121,10 +121,9 @@ router.post("/", async (req, res) => {
 
       const messageToSend = `<p>הסטודנט ${tutor.fname +
         " " +
-        tutor.lname} צריך אישור הרשמה</p>
-      <a href="${linkToWebsite}">לחץ כאן כדי להגיע לעמוד האישורים</a>`;
+        tutor.lname} צריך אישור הרשמה</p>`;
 
-      sendToMail(to, "אישור הרשמה לחונך חדש", messageToSend);
+      sendToMail(to, "אישור הרשמה למתגבר חדש", messageToSend);
 
       res.header("x-auth-token", token).send(
         _.pick(tutor, [

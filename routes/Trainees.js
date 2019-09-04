@@ -8,7 +8,7 @@ const router = express.Router();
 const linkToWebsite = "localhost:3000/alerts";
 const admin = require("../middleware/admin");
 const sendToMail = require("../utils/mailSender");
-const to = "matanya.g@gmail.com";
+const to = "belibahoma@gmail.com";
 
 router.get("/me", auth, async (req, res) => {
   if (req.user.type === "trainee") {
@@ -194,10 +194,9 @@ router.post("/", async (req, res) => {
 
       const messageToSend = `<p>הסטודנט ${trainee.fname +
         " " +
-        trainee.lname} צריך אישור הרשמה</p>
-      <a href="${linkToWebsite}">לחץ כאן כדי להגיע לעמוד האישורים</a>`;
+        trainee.lname} צריך אישור הרשמה</p>`;
 
-      sendToMail(to, "אישור הרשמה לחונך חדש", messageToSend);
+      sendToMail(to, "אישור הרשמה לסטודנט חרדי חדש", messageToSend);
 
       res.header("x-auth-token", token).send(
         _.pick(trainee, [
