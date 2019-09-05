@@ -84,9 +84,10 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
-router.get("/approve/trainee/:id", auth, async (req, res) => {
+router.post("/approve/trainee/:id", auth, async (req, res) => {
   if (req.user.type === "admin") {
     try {
+      console.log("here");
       const user = await Trainee.findById(req.user._id);
       user.isApproved = true;
       user.isActive = true;
@@ -100,9 +101,10 @@ router.get("/approve/trainee/:id", auth, async (req, res) => {
   }
 });
 
-router.get("/approve/tutor/:id", auth, async (req, res) => {
+router.post("/approve/tutor/:id", auth, async (req, res) => {
   if (req.user.type === "admin") {
     try {
+      console.log("here");
       const user = await Tutor.findById(req.user._id);
       user.isApproved = true;
       user.isActive = true;

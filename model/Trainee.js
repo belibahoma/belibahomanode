@@ -207,10 +207,7 @@ const traineeSchema = new mongoose.Schema({
   additionalTopics: String,
   isActive: { type: Boolean, default: false },
   leavingReason: {
-    type: String,
-    required: function() {
-      return !this.isActive;
-    }
+    type: String
   },
   isDropped: { type: Boolean, default: false }
 });
