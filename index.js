@@ -27,6 +27,8 @@ const urlDB =
   config.get("mongoAddress") ||
   `mongodb://${mongoHost}:${mongoPort}/beliba_homa`;
 
+console.log(urlDB);
+
 mongoose
   .connect(urlDB)
   .then(() => console.log("Connected to MongoDB..."))

@@ -209,7 +209,7 @@ const traineeSchema = new mongoose.Schema({
   leavingReason: {
     type: String,
     required: function() {
-      return this.isActive;
+      return !this.isActive;
     }
   },
   isDropped: { type: Boolean, default: false }

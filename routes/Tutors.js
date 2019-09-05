@@ -104,7 +104,7 @@ router.post("/", async (req, res) => {
       englishLevel: req.body.englishLevel,
       physicsLevel: req.body.physicsLevel,
       additionalTopics: req.body.additionalTopics,
-      isActive: req.body.isActive
+      isActive: true
     });
     if (req.body.phoneB && req.body.phoneB !== "") {
       tutor.phoneB = req.body.phoneB;

@@ -267,6 +267,7 @@ router.put("/:id", auth, async (req, res) => {
   //   const { error } = validate(req.body);
   //   if (error) return res.status(400).send(error.details[0].message);
   //TODO
+  console.log(req.body.id);
   if (req.user.type === "admin" || req.user._id == req.params.id) {
     let trainee = await Trainee.findById(req.params.id);
     if (!trainee) {
@@ -314,7 +315,7 @@ router.put("/:id", auth, async (req, res) => {
       trainee.englishLevel = req.body.englishLevel;
       trainee.physicsLevel = req.body.physicsLevel;
       trainee.additionalTopics = req.body.additionalTopics;
-      trainee.isActive = req.body.isActive;
+      trainee.isActive = true;
       try {
         if (req.body.password) {
           trainee.password = req.body.password;
