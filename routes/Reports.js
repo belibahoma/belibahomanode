@@ -1,5 +1,7 @@
 const { Report } = require("../model/Report");
 const auth = require("../middleware/auth");
+const Coordinator = require("../model/Coordinator");
+const Tutor = require("../model/Tutor");
 const admin = require("../middleware/admin");
 const mongoose = require("mongoose");
 const express = require("express");
@@ -12,8 +14,20 @@ router.get("/", auth, async (req, res) => {
       .populate("tutor_id", ["_id", "fname", "lname", "isImpact"])
       .populate("trainee_id", ["_id", "fname", "lname"]);
   } else if (req.user.type === "coordinator") {
+    const coordinator = Coordinator.find({ _id: req.user._id });
+    const tutors = Tutor.find({ activityArea: coordinator.activityArea });
+    const tutorArray = tutors.map(tutor => {
+      return tutor._id;
+    });
+    reports = await Report.find({ tutor_id: tutorArray })
+      .populate("tutor_id", ["_id", "fname", "lname", "isImpact"])
+      .populate("trainee_id", ["_id", "fname", "lname"]);
   } else if (req.user.type === "tutor") {
     reports = await Report.find({ tutor_id: req.user._id })
+      .populate("tutor_id", ["_id", "fname", "lname", "isImpact"])
+      .populate("trainee_id", ["_id", "fname", "lname"]);
+  } else if (req.user.type === "trainee") {
+    reports = await Report.find({ trainee_id: req.user._id })
       .populate("tutor_id", ["_id", "fname", "lname", "isImpact"])
       .populate("trainee_id", ["_id", "fname", "lname"]);
   }
@@ -21,7 +35,7 @@ router.get("/", auth, async (req, res) => {
   res.send(reports);
 });
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   //   const { error } = validate(req.body);
   //   if (error) return res.status(400).send(error.details[0].message);
 
@@ -99,7 +113,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth, async (req, res) => {
   //   const { error } = validate(req.body);
   //   if (error) return res.status(400).send(error.details[0].message);
 
