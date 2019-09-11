@@ -117,6 +117,9 @@ router.put("/:id", auth, async (req, res) => {
         }
 
         coordinator = await coordinator.save();
+        coordinator = await coordinator
+          .populate("activityAreas")
+          .execPopulate();
         res.send(
           _.pick(coordinator, [
             "_id",

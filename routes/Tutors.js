@@ -9,6 +9,7 @@ const express = require("express");
 const router = express.Router();
 const linkToWebsite = "localhost:3000/alerts";
 const to = "belibahoma@gmail.com";
+const { Coordinator } = require("../model/Coordinator");
 
 router.get("/me", auth, async (req, res) => {
   if (req.user.type === "tutor") {
@@ -34,6 +35,25 @@ router.get("/", auth, async (req, res) => {
       .populate("mainStudy")
       .populate("secondaryStudy");
     res.send(tutors);
+  } else if (req.user.type === "coordinator") {
+    const coordinator = await Coordinator.findById(req.user._id);
+    // console.log(coordinator);
+
+    const tutors = await Tutor.find({
+      activityArea: coordinator.activityAreas
+    })
+      .sort("fname")
+      .populate("institute")
+      .populate("activityArea")
+      .populate("mainStudy")
+      .populate("secondaryStudy");
+    // console.log("tutors", tutors);
+
+    res.send(
+      tutors.map(tutor => {
+        return _.omit(tutor, "password");
+      })
+    );
   } else {
     res.status(401).send("unauthorized");
   }
@@ -182,7 +202,11 @@ router.put("/:id", auth, async (req, res) => {
   //   const { error } = validate(req.body);
   //   if (error) return res.status(400).send(error.details[0].message);
   //TODO
-  if (req.user.type === "admin" || req.user._id == req.params.id) {
+  if (
+    req.user.type === "admin" ||
+    req.user._id == req.params.id ||
+    req.user.type === "coordinator"
+  ) {
     let tutor = await Tutor.findById(req.params.id);
     if (!tutor) {
       return res.status(404).send("The tutor with the given ID was not found.");

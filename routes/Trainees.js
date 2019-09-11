@@ -9,6 +9,7 @@ const linkToWebsite = "localhost:3000/alerts";
 const admin = require("../middleware/admin");
 const sendToMail = require("../utils/mailSender");
 const to = "belibahoma@gmail.com";
+const { Coordinator } = require("../model/Coordinator");
 
 router.get("/me", auth, async (req, res) => {
   if (req.user.type === "trainee") {
@@ -91,6 +92,25 @@ router.get("/", auth, async (req, res) => {
           "isDropped",
           "isApproved"
         ]);
+      })
+    );
+  } else if (req.user.type === "coordinator") {
+    const coordinator = await Coordinator.findById(req.user._id);
+    // console.log(coordinator);
+
+    const trainees = await Trainee.find({
+      activityArea: coordinator.activityAreas
+    })
+      .sort("fname")
+      .populate("institute")
+      .populate("activityArea")
+      .populate("mainStudy")
+      .populate("secondaryStudy");
+    // console.log("trainees", trainees);
+
+    res.send(
+      trainees.map(trainee => {
+        return _.omit(trainee, "password");
       })
     );
   } else {
@@ -268,7 +288,11 @@ router.put("/:id", auth, async (req, res) => {
   //   if (error) return res.status(400).send(error.details[0].message);
   //TODO
   console.log(req.body.id);
-  if (req.user.type === "admin" || req.user._id == req.params.id) {
+  if (
+    req.user.type === "admin" ||
+    req.user._id == req.params.id ||
+    req.user.type === "coordinator"
+  ) {
     let trainee = await Trainee.findById(req.params.id);
     if (!trainee) {
       return res
