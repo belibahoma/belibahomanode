@@ -339,7 +339,7 @@ router.put("/:id", auth, async (req, res) => {
       trainee.englishLevel = req.body.englishLevel;
       trainee.physicsLevel = req.body.physicsLevel;
       trainee.additionalTopics = req.body.additionalTopics;
-      trainee.isActive = true;
+      trainee.isActive = req.body.isActive;
       try {
         if (req.body.password) {
           trainee.password = req.body.password;

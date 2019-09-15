@@ -3,6 +3,9 @@ const mongoose = require("mongoose");
 const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/auth");
+const { Trainee } = require("../model/Trainee");
+const { Tutor } = require("../model/Tutor");
+const { Coordinator } = require("../model/Coordinator");
 const admin = require("../middleware/admin");
 
 router.get("/", auth, async (req, res) => {
@@ -12,6 +15,31 @@ router.get("/", auth, async (req, res) => {
       .populate("trainee_id", ["_id", "fname", "lname"]);
     res.send(relations);
   } else if (req.user.type === "coordinator") {
+    const coordinator = await Coordinator.findById(req.user._id);
+
+    const trainees = await Trainee.find({
+      activityArea: coordinator.activityAreas
+    });
+    const tutors = await Tutor.find({
+      activityArea: coordinator.activityAreas
+    });
+    const relations = await Relation.find({
+      $or: [
+        {
+          trainee_id: trainees.map(trainee => {
+            return trainee._id;
+          })
+        },
+        {
+          tutor_id: tutors.map(tutor => {
+            return tutor._id;
+          })
+        }
+      ]
+    })
+      .populate("tutor_id", ["_id", "fname", "lname"])
+      .populate("trainee_id", ["_id", "fname", "lname"]);
+    res.send(relations);
   } else if (req.user.type === "tutor") {
     const relations = await Relation.find({ tutor_id: req.user._id })
       .populate("tutor_id", ["_id", "fname", "lname"])
