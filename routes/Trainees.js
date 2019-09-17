@@ -10,6 +10,7 @@ const admin = require("../middleware/admin");
 const sendToMail = require("../utils/mailSender");
 const to = "belibahoma@gmail.com";
 const { Coordinator } = require("../model/Coordinator");
+const { Relation } = require("../model/Relation");
 
 router.get("/me", auth, async (req, res) => {
   if (req.user.type === "trainee") {
@@ -347,6 +348,12 @@ router.put("/:id", auth, async (req, res) => {
           trainee.password = await bcrypt.hash(trainee.password, salt);
         }
         trainee = trainee.save();
+        if (!trainee.isActive) {
+          await Relation.updateMany(
+            { trainee_id: trainee._id },
+            { $set: { isActive: false } }
+          );
+        }
         res.send(
           _.pick(trainee, [
             "_id",

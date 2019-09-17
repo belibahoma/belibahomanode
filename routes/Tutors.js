@@ -10,6 +10,7 @@ const router = express.Router();
 const linkToWebsite = "localhost:3000/alerts";
 const to = "belibahoma@gmail.com";
 const { Coordinator } = require("../model/Coordinator");
+const { Relation } = require("../model/Relation");
 
 router.get("/me", auth, async (req, res) => {
   if (req.user.type === "tutor") {
@@ -260,6 +261,12 @@ router.put("/:id", auth, async (req, res) => {
       }
       try {
         tutor = await tutor.save();
+        if (!tutor.isActive) {
+          await Relation.updateMany(
+            { tutor_id: tutor._id },
+            { $set: { isActive: false } }
+          );
+        }
         res.send(
           _.pick(tutor, [
             "_id",

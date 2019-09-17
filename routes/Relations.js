@@ -87,7 +87,9 @@ router.put("/:id", [auth], async (req, res) => {
     {
       new: true
     }
-  );
+  )
+    .populate("tutor_id", ["_id", "fname", "lname"])
+    .populate("trainee_id", ["_id", "fname", "lname"]);
 
   if (!relation)
     return res
@@ -97,26 +99,42 @@ router.put("/:id", [auth], async (req, res) => {
   res.send(relation);
 });
 
-router.delete("/:id", [auth, admin], async (req, res) => {
-  const relation = await Relation.findByIdAndRemove(req.params.id);
+router.delete("/:id", auth, async (req, res) => {
+  if (req.user.type == "admin" || req.user.type == "coordinator") {
+    const relation = await Relation.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: { isActive: false }
+      },
+      { new: true }
+    )
+      .populate("tutor_id", ["_id", "fname", "lname"])
+      .populate("trainee_id", ["_id", "fname", "lname"]);
 
-  if (!relation)
-    return res
-      .status(404)
-      .send("The relation with the given ID was not found.");
-
-  res.send(relation);
+    if (!relation)
+      return res
+        .status(404)
+        .send("The relation with the given ID was not found.");
+    console.log(relation);
+    res.send(relation);
+  } else {
+    res.status(403).send("Access denied");
+  }
 });
 
-router.get("/:id", [auth, admin], async (req, res) => {
-  const relation = await Relation.findById(req.params.id);
+router.get("/:id", auth, async (req, res) => {
+  if (req.user.type == "coordinator" || req.user.type == "admin") {
+    const relation = await Relation.findById(req.params.id);
 
-  if (!relation)
-    return res
-      .status(404)
-      .send("The relation with the given ID was not found.");
+    if (!relation)
+      return res
+        .status(404)
+        .send("The relation with the given ID was not found.");
 
-  res.send(relation);
+    res.send(relation);
+  } else {
+    res.status(403).send("Access denied");
+  }
 });
 
 module.exports = router;
