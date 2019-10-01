@@ -31,9 +31,10 @@ const urlDB = `mongodb://${mongoHost}:${mongoPort}/beliba_homa`;
 console.log(urlDB);
 
 mongoose
-  .connect(urlDB)
+  .connect(urlDB,  { useUnifiedTopology: true, useNewUrlParser: true })
   .then(() => console.log("Connected to MongoDB..."))
   .catch(err => console.error("Could not connect to MongoDB...", err));
+mongoose.set('useCreateIndex', true);
 
 app.use(express.json());
 app.use(accessControls);
