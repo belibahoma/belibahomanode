@@ -26,7 +26,7 @@ const mongoPort = process.env.MONGO_PORT || "27017";
 // const urlDB =
 //   config.get("mongoAddress") ||
 //   `mongodb://${mongoHost}:${mongoPort}/beliba_homa`;
-const urlDB = `mongodb://${mongoHost}:${mongoPort}/beliba_homa`;
+const urlDB = `mongodb://${mongoHost}:${mongoPort}/test`;
 console.log("host is " + mongoHost + " and port is  " + mongoPort);
 
 console.log(urlDB);
