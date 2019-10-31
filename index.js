@@ -27,12 +27,14 @@ const mongoPort = process.env.MONGO_PORT || "27017";
 //   config.get("mongoAddress") ||
 //   `mongodb://${mongoHost}:${mongoPort}/beliba_homa`;
 const urlDB = `mongodb://${mongoHost}:${mongoPort}/beliba_homa`;
+let db = process.env.MONGOD_URI || urlDB
+
 console.log("host is " + mongoHost + " and port is  " + mongoPort);
 
 console.log(urlDB);
 
 mongoose
-  .connect(urlDB,  { useUnifiedTopology: true, useNewUrlParser: true })
+  .connect(process.env.node_mongoAddress,  { useUnifiedTopology: true, useNewUrlParser: true })
   .then(() => console.log("Connected to MongoDB..."))
   .catch(err => console.error("Could not connect to MongoDB...", err));
 mongoose.set('useCreateIndex', true);
