@@ -20,21 +20,11 @@ if (!config.get("jwtPrivateKey")) {
   process.exit(1);
 }
 
-const mongoHost = process.env.MONGO_HOST || "localhost";
-const mongoPort = process.env.MONGO_PORT || "27017";
-// const urlDB = `mongodb://admin:admin@${mongoHost}:${mongoPort}/beliba_homa?retryWrites=true&authSource=admin`;
-// const urlDB =
-//   config.get("mongoAddress") ||
-//   `mongodb://${mongoHost}:${mongoPort}/beliba_homa`;
-const urlDB = `mongodb://${mongoHost}:${mongoPort}/beliba_homa`;
-let db = process.env.MONGOD_URI || urlDB
-
-console.log("host is " + mongoHost + " and port is  " + mongoPort);
-
-console.log(urlDB);
-
+const urlDB = `mongodb://localhost:$27017/beliba_homa`;
+const address = process.env.node_mongoAddress || urlDB;
+console.log(address);
 mongoose
-  .connect(process.env.node_mongoAddress,  { useUnifiedTopology: true, useNewUrlParser: true })
+  .connect(address,  { useUnifiedTopology: true, useNewUrlParser: true })
   .then(() => console.log("Connected to MongoDB..."))
   .catch(err => console.error("Could not connect to MongoDB...", err));
 mongoose.set('useCreateIndex', true);
