@@ -11,6 +11,7 @@ const AcademicDetails = require("./routes/AcademicDetails");
 const Reports = require("./routes/Reports");
 const Relations = require("./routes/Relations");
 const Trainees = require("./routes/Trainees");
+const DynamicQuery = require("./routes/DynamicQuery");
 // const customers = require('./routes/customers');
 const express = require("express");
 const app = express();
@@ -41,8 +42,13 @@ app.use("/api/institutes", Institutes);
 app.use("/api/relations", Relations);
 app.use("/api/areas", Areas);
 app.use("/api/auth", auth);
+app.use("/api/dynamicQuery", DynamicQuery)
+
 require("./utils/prod")(app);
 // app.use('/api/customers', customers);
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
+app.get('/', function (req, res) {
+  return res.send('pong');
+ });
