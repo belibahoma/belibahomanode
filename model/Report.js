@@ -46,6 +46,8 @@ const reportSchema = new mongoose.Schema({
   totalTime: Number,
   timeForTrainee: Number,
   date: { type: Date, required: true },
+  from: { type: String },
+  to: { type: String },
   studyTime: Number,
   chavrutaTime: Number,
   casingTime: Number,
