@@ -54,6 +54,8 @@ router.post("/", auth, async (req, res) => {
       location: req.body.location,
       isCasingApproved: req.body.isCasingApproved,
       date: req.body.date,
+      from: req.body.from,
+      to: req.body.to,
       description: req.body.description,
       knowledgeRank: req.body.knowledgeRank,
       connectionRank: req.body.connectionRank,
@@ -127,6 +129,8 @@ router.put("/:id", auth, async (req, res) => {
   report.location = req.body.location;
   report.isCasingApproved = req.body.isCasingApproved;
   report.date = req.body.date;
+  report.from = req.body.from;
+  report.to = req.body.to;
   report.description = req.body.description;
   report.isNeedAdmin = req.params.isNeedAdmin;
   report.knowledgeRank = req.body.knowledgeRank;
