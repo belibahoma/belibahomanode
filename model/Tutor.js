@@ -103,11 +103,11 @@ const tutorSchema = new mongoose.Schema({
       return this.academicPlan == "תואר ראשון";
     }
   },
-  bankAccount: {
-    bankName: { type: String, required: true },
-    branchNumber: { type: String, required: true },
-    accountNumber: { type: String, required: true }
-  },
+  // bankAccount: {
+  //   bankName: { type: String, required: true },
+  //   branchNumber: { type: String, required: true },
+  //   accountNumber: { type: String, required: true }
+  // },
   realAddress: {
     street: { type: String, required: true },
     city: { type: String, required: true },
