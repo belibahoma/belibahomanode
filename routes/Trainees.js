@@ -54,7 +54,6 @@ router.get("/", auth, async (req, res) => {
           "secondaryStudy",
           "academicPlan",
           "studyYear",
-          "bankAccount",
           "realAddress",
           "currentAddress",
           "activeYears",
@@ -160,7 +159,6 @@ router.post("/", async (req, res) => {
       mainStudy: req.body.mainStudy,
       academicPlan: req.body.academicPlan,
       studyYear: req.body.studyYear,
-      bankAccount: req.body.bankAccount,
       realAddress: req.body.realAddress,
       currentAddress: req.body.currentAddress,
       activeYears: req.body.activeYears,
@@ -238,7 +236,6 @@ router.post("/", async (req, res) => {
           "secondaryStudy",
           "academicPlan",
           "studyYear",
-          "bankAccount",
           "realAddress",
           "currentAddress",
           "activeYears",
@@ -316,7 +313,6 @@ router.put("/:id", auth, async (req, res) => {
       trainee.secondaryStudy = req.body.secondaryStudy;
       trainee.academicPlan = req.body.academicPlan;
       trainee.studyYear = req.body.studyYear;
-      trainee.bankAccount = req.body.bankAccount;
       trainee.realAddress = req.body.realAddress;
       trainee.currentAddress = req.body.currentAddress;
       trainee.activeYears = req.body.activeYears;
@@ -373,7 +369,6 @@ router.put("/:id", auth, async (req, res) => {
             "secondaryStudy",
             "academicPlan",
             "studyYear",
-            "bankAccount",
             "realAddress",
             "currentAddress",
             "activeYears",
@@ -475,7 +470,6 @@ router.get("/:id", auth, async (req, res) => {
         "secondaryStudy",
         "academicPlan",
         "studyYear",
-        "bankAccount",
         "realAddress",
         "currentAddress",
         "activeYears",
