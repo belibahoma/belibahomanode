@@ -103,6 +103,7 @@ const traineeSchema = new mongoose.Schema({
       return this.academicPlan == "תואר ראשון";
     }
   },
+
   realAddress: {
     street: { type: String, required: true },
     city: { type: String, required: true },
