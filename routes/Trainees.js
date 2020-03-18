@@ -59,7 +59,7 @@ router.get("/", auth, async (req, res) => {
           "activeYears",
           "religiousStatus",
           "religiousText",
-          "unavailableTimes",
+          // "unavailableTimes",
           "notes",
           "isNeedAdditionalRelation",
           "activeStatus",
@@ -164,7 +164,7 @@ router.post("/", async (req, res) => {
       activeYears: req.body.activeYears,
       religiousStatus: req.body.religiousStatus,
       religiousText: req.body.religiousText,
-      unavailableTimes: req.body.unavailableTimes,
+      // unavailableTimes: req.body.unavailableTimes,
       notes: req.body.notes,
       stuffNotes: req.body.stuffNotes,
       isNeedAdditionalRelation: req.body.isNeedAdditionalRelation,
@@ -241,7 +241,7 @@ router.post("/", async (req, res) => {
           "activeYears",
           "religiousStatus",
           "religiousText",
-          "unavailableTimes",
+          // "unavailableTimes",
           "notes",
           "stuffNotes",
           "isNeedAdditionalRelation",
@@ -318,7 +318,7 @@ router.put("/:id", auth, async (req, res) => {
       trainee.activeYears = req.body.activeYears;
       trainee.religiousStatus = req.body.religiousStatus;
       trainee.religiousText = req.body.religiousText;
-      trainee.unavailableTimes = req.body.unavailableTimes;
+      // trainee.unavailableTimes = req.body.unavailableTimes;
       trainee.notes = req.body.notes;
       trainee.stuffNotes = req.body.stuffNotes;
       trainee.isNeedAdditionalRelation = req.body.isNeedAdditionalRelation;
@@ -374,7 +374,7 @@ router.put("/:id", auth, async (req, res) => {
             "activeYears",
             "religiousStatus",
             "religiousText",
-            "unavailableTimes",
+            // "unavailableTimes",
             "notes",
             "stuffNotes",
             "isNeedAdditionalRelation",
@@ -475,7 +475,7 @@ router.get("/:id", auth, async (req, res) => {
         "activeYears",
         "religiousStatus",
         "religiousText",
-        "unavailableTimes",
+        // "unavailableTimes",
         "notes",
         "stuffNotes",
         "isNeedAdditionalRelation",

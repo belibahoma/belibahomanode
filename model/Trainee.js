@@ -126,7 +126,7 @@ const traineeSchema = new mongoose.Schema({
       this.religiousStatus === "אחר";
     }
   },
-  unavailableTimes: [{ day: Number, Time: { start: Date, end: Date } }],
+  // unavailableTimes: [{ day: Number, Time: { start: Date, end: Date } }],
   notes: String,
   stuffNotes: String,
   isNeedAdditionalRelation: { type: Boolean, default: false },
