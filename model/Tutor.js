@@ -49,7 +49,7 @@ const tutorSchema = new mongoose.Schema({
   //     },
   //     message: "מספר טלפון חייב להיות  9-10 ספרות"
   //   }
-  },
+  // },
   birthDate: {
     type: Date,
     required: true,
