@@ -41,14 +41,14 @@ const tutorSchema = new mongoose.Schema({
       message: "מספר טלפון חייב להיות 9-10 ספרות"
     }
   },
-  phoneB: {
-    type: String,
-    validate: {
-      validator: function(v) {
-        return /\d{9,10}/.test(v) || v == null;
-      },
-      message: "מספר טלפון חייב להיות  9-10 ספרות"
-    }
+  // phoneB: {
+  //   type: String,
+  //   validate: {
+  //     validator: function(v) {
+  //       return /\d{9,10}/.test(v) || v == null;
+  //     },
+  //     message: "מספר טלפון חייב להיות  9-10 ספרות"
+  //   }
   },
   birthDate: {
     type: Date,
@@ -104,11 +104,11 @@ const tutorSchema = new mongoose.Schema({
     }
   },
 
-  realAddress: {
-    street: { type: String, required: true },
-    city: { type: String, required: true },
-    neighborhood: { type: String, required: true }
-  },
+  // realAddress: {
+  //   street: { type: String, required: true },
+  //   city: { type: String, required: true },
+  //   neighborhood: { type: String, required: true }
+  // },
   currentAddress: {
     street: { type: String, required: true },
     city: { type: String, required: true },
@@ -127,7 +127,7 @@ const tutorSchema = new mongoose.Schema({
     }
   },
   scholarshipTimes: [{ date: Date, totalTime: Number }],
-  unavailableTimes: [{ day: Number, Time: { start: Date, end: Date } }],
+  // unavailableTimes: [{ day: Number, Time: { start: Date, end: Date } }],
   notes: String,
   stuffNotes: String,
   isNeedAdditionalRelation: { type: Boolean, default: false },

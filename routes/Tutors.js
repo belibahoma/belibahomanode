@@ -101,12 +101,12 @@ router.post("/", async (req, res) => {
       mainStudy: req.body.mainStudy,
       academicPlan: req.body.academicPlan,
       studyYear: req.body.studyYear,
-      realAddress: req.body.realAddress,
+      // realAddress: req.body.realAddress,
       currentAddress: req.body.currentAddress,
       activeYears: req.body.activeYears,
       religiousStatus: req.body.religiousStatus,
       religiousText: req.body.religiousText,
-      unavailableTimes: req.body.unavailableTimes,
+      // unavailableTimes: req.body.unavailableTimes,
       notes: req.body.notes,
       stuffNotes: req.body.stuffNotes,
       isNeedAdditionalRelation: req.body.isNeedAdditionalRelation,
@@ -126,9 +126,9 @@ router.post("/", async (req, res) => {
       additionalTopics: req.body.additionalTopics,
       isActive: true
     });
-    if (req.body.phoneB && req.body.phoneB !== "") {
-      tutor.phoneB = req.body.phoneB;
-    }
+    // if (req.body.phoneB && req.body.phoneB !== "") {
+    //   tutor.phoneB = req.body.phoneB;
+    // }
     if (req.body.secondaryStudy && req.body.secondaryStudy !== "") {
       tutor.secondaryStudy = req.body.secondaryStudy;
     }
@@ -154,7 +154,7 @@ router.post("/", async (req, res) => {
           "lname",
           "email",
           "phoneA",
-          "phoneB",
+          // "phoneB",
           "gender",
           "birthDate",
           "maritalStatus",
@@ -164,12 +164,12 @@ router.post("/", async (req, res) => {
           "secondaryStudy",
           "academicPlan",
           "studyYear",
-          "realAddress",
+          // "realAddress",
           "currentAddress",
           "activeYears",
           "religiousStatus",
           "religiousText",
-          "unavailableTimes",
+          // "unavailableTimes",
           "notes",
           "stuffNotes",
           "isNeedAdditionalRelation",
@@ -216,7 +216,7 @@ router.put("/:id", auth, async (req, res) => {
       tutor.email = req.body.email;
       //TODO old password
       tutor.phoneA = req.body.phoneA;
-      tutor.phoneB = req.body.phoneB;
+      // tutor.phoneB = req.body.phoneB;
       tutor.birthDate = req.body.birthDate;
       tutor.gender = req.body.gender;
       tutor.maritalStatus = req.body.maritalStatus;
@@ -226,12 +226,12 @@ router.put("/:id", auth, async (req, res) => {
       tutor.secondaryStudy = req.body.secondaryStudy;
       tutor.academicPlan = req.body.academicPlan;
       tutor.studyYear = req.body.studyYear;
-      tutor.realAddress = req.body.realAddress;
+      // tutor.realAddress = req.body.realAddress;
       tutor.currentAddress = req.body.currentAddress;
       tutor.activeYears = req.body.activeYears;
       tutor.religiousStatus = req.body.religiousStatus;
       tutor.religiousText = req.body.religiousText;
-      tutor.unavailableTimes = req.body.unavailableTimes;
+      // tutor.unavailableTimes = req.body.unavailableTimes;
       tutor.notes = req.body.notes;
       tutor.stuffNotes = req.body.stuffNotes;
       tutor.isNeedAdditionalRelation = req.body.isNeedAdditionalRelation;
@@ -273,7 +273,7 @@ router.put("/:id", auth, async (req, res) => {
             "lname",
             "email",
             "phoneA",
-            "phoneB",
+            // "phoneB",
             "birthDate",
             "gender",
             "maritalStatus",
@@ -283,12 +283,12 @@ router.put("/:id", auth, async (req, res) => {
             "secondaryStudy",
             "academicPlan",
             "studyYear",
-            "realAddress",
+            // "realAddress",
             "currentAddress",
             "activeYears",
             "religiousStatus",
             "religiousText",
-            "unavailableTimes",
+            // "unavailableTimes",
             "notes",
             "stuffNotes",
             "isNeedAdditionalRelation",
@@ -355,7 +355,7 @@ router.get("/:id", auth, async (req, res) => {
         "lname",
         "email",
         "phoneA",
-        "phoneB",
+        // "phoneB",
         "birthDate",
         "maritalStatus",
         "gender",
@@ -365,12 +365,12 @@ router.get("/:id", auth, async (req, res) => {
         "secondaryStudy",
         "academicPlan",
         "studyYear",
-        "realAddress",
+        // "realAddress",
         "currentAddress",
         "activeYears",
         "religiousStatus",
         "religiousText",
-        "unavailableTimes",
+        // "unavailableTimes",
         "notes",
         "stuffNotes",
         "isNeedAdditionalRelation",
