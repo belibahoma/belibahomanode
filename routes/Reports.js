@@ -71,7 +71,7 @@ router.post("/", auth, async (req, res) => {
       isDeathOfFirstDegree: req.body.isDeathOfFirstDegree || false,
       isHappened: req.body.isHappened || false,
       spacialMissions: req.body.spacialMissions || "",
-      reportYear: req.body.reportYear || "",
+      reportYear: req.body.reportYear || "תשפ",
     });
 
     if (req.body.trainee_id && req.body.trainee_id !== "error") {
@@ -148,7 +148,7 @@ router.put("/:id", auth, async (req, res) => {
   report.isHappened = req.body.isHappened;
   report.trainee_id = req.body.trainee_id;
   report.spacialMissions = req.body.spacialMissions;
-  report.reportYear = req.body.reportYear || "";
+  report.reportYear = req.body.reportYear || "תשפ";
 
   report.totalTime =
     report.studyTime +
