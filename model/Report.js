@@ -65,7 +65,8 @@ const reportSchema = new mongoose.Schema({
       return this.type === "ordinary";
     }
   },
-  spacialMissions: { date: Date, explanation: String, totalTime: Number }
+  spacialMissions: { date: Date, explanation: String, totalTime: Number },
+  reportYear: {type: String, default: ""},
 });
 
 const Report = mongoose.model("Report", reportSchema);
