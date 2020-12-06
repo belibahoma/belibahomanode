@@ -1,14 +1,10 @@
 {
   "name": "belibahomanode",
   "version": "1.0.0",
-  "engines": {
-    "node": "10.15.3"
-  },
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "prepare": "npm install",
     "test": "node test.js"
   },
   "keywords": [],

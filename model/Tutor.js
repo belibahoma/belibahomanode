@@ -144,6 +144,7 @@ const tutorSchema = new mongoose.Schema({
   // until here is the common part
   isImpact: { type: Boolean, default: false },
   isShachak: { type: Boolean, default: false },
+  isFromUniformToStudies: {type: Boolean, default: false },
   isForAcademicPoints: { type: Boolean, default: false },
   isCityScholarship: { type: Boolean, default: false },
   mathLevel: { type: Number, min: 0, max: 5, default: 0 },
