@@ -118,6 +118,7 @@ router.post("/", async (req, res) => {
       // until here is the common part
       isImpact: req.body.isImpact,
       isShachak: req.body.isShachak,
+      isFromUniformToStudies: req.body.isFromUniformToStudies||false,
       isForAcademicPoints: req.body.isForAcademicPoints,
       isCityScholarship: req.body.isCityScholarship,
       mathLevel: req.body.mathLevel,
@@ -181,6 +182,7 @@ router.post("/", async (req, res) => {
           // until here is the common part
           "isImpact",
           "isShachak",
+          "isFromUniformToStudies",
           "isForAcademicPoints",
           "isCityScholarship",
           "mathLevel",
@@ -243,6 +245,7 @@ router.put("/:id", auth, async (req, res) => {
       // until here is the common part
       tutor.isImpact = req.body.isImpact;
       tutor.isShachak = req.body.isShachak;
+      tutor.isFromUniformToStudies = req.body.isFromUniformToStudies;
       tutor.isForAcademicPoints = req.body.isForAcademicPoints;
       tutor.isCityScholarship = req.body.isCityScholarship;
       tutor.mathLevel = req.body.mathLevel;
@@ -300,6 +303,7 @@ router.put("/:id", auth, async (req, res) => {
             // until here is the common part
             "isImpact",
             "isShachak",
+            "isFromUniformToStudies",
             "isForAcademicPoints",
             "isCityScholarship",
             "mathLevel",
@@ -382,6 +386,7 @@ router.get("/:id", auth, async (req, res) => {
         // until here is the common part
         "isImpact",
         "isShachak",
+        "isFromUniformToStudies",
         "isForAcademicPoints",
         "isCityScholarship",
         "mathLevel",
