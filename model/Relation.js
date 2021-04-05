@@ -11,7 +11,18 @@ const relationSchema = new mongoose.Schema({
     ref: "Trainee",
     required: true
   },
-  isActive: { type: Boolean, required: true, default: true }
+  isActive: {
+    type: Boolean,
+    required: true,
+    default: true
+  },
+  totalTime: {
+    type: Number,
+    required: true,
+    default: 0}
+
+
+
 });
 
 const Relation = mongoose.model("Relation", relationSchema);
